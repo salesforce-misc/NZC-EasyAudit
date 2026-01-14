@@ -1,0 +1,17 @@
+<!--
+ - Created by mverigin on 5/16/23.
+ -->
+
+<!-- NZc Easy Audit Step -->
+<template>
+    <lightning-accordion-section label={title}>
+        <template if:true={recordLinkId}>
+            <a href={recordLinkId}>
+                <p>{recordLinkName}</p>
+            </a>
+        </template>
+        <template for:each={lines} for:item='line' >
+        <p key={line} class='calculation-line'>{line}</p>
+        </template>
+    </lightning-accordion-section>
+</template>

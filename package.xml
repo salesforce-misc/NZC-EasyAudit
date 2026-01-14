@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Package xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>EasyAuditScreenCmp</fullName>
+    <types>
+        <members>NZC_EasyAuditConstants</members>
+        <members>NZC_EasyAuditControllerV2</members>
+        <members>NZC_EasyAuditControllerV2Test</members>
+        <members>NZC_EasyAuditInfoWrapper</members>
+        <name>ApexClass</name>
+    </types>
+    <types>
+        <members>NZC_EasyAuditShell</members>
+        <name>AuraDefinitionBundle</name>
+    </types>
+    <types>
+        <members>nZC_EasyAudit</members>
+        <members>nZC_EasyAuditLogging</members>
+        <members>nZC_EasyAuditStationaryCalc</members>
+        <members>nZC_EasyAuditStep</members>
+        <members>nZC_EasyAuditUnitConversion</members>
+        <members>nZC_EasyAuditVehicleCalc</members>
+        <name>LightningComponentBundle</name>
+    </types>
+    <version>55.0</version>
+</Package>

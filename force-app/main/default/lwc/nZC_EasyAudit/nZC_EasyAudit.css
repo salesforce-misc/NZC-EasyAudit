@@ -1,0 +1,8 @@
+/**
+ * Created by mverigin on 5/5/23.
+ */
+.base-div {
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+}

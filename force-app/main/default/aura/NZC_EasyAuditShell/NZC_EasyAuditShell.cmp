@@ -1,0 +1,10 @@
+<!--
+ - Created by mverigin on 5/5/23.
+ -->
+
+<aura:component description="NZC_EasyAuditShell" implements="force:hasRecordId,flexipage:availableForRecordHome">
+    <aura:attribute name="recordId" type="String" />
+    <aura:handler name="init" value="{!this}" action="{!c.doInit}"/>
+
+    <c:nZC_EasyAudit recordId="{!v.recordId}"/>
+</aura:component>
