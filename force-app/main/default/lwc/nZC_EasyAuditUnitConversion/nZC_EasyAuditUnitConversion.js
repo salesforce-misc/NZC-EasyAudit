@@ -1,5 +1,8 @@
 /**
- * Created by mverigin on 5/23/23.
+ * Copyright (c) 2024, Salesforce, Inc.
+ * All rights reserved.
+ * SPDX-License-Identifier: Apache-2.0
+ * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/Apache-2.0
  */
 const CONVERSION_FACTOR_LIST = [
     ['G_PER_KL', 1, 'KG_PER_KM'],
