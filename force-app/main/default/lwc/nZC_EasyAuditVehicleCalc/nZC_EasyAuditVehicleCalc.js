@@ -1,6 +1,10 @@
-/**
- * Created by mverigin on 5/12/23.
+/*
+ * Copyright (c) 2024, Salesforce, Inc.
+ * All rights reserved.
+ * SPDX-License-Identifier: Apache-2.0
+ * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/Apache-2.0
  */
+
 import CalculationStep from 'c/nZC_EasyAuditLogging';
 import UnitConversion from 'c/nZC_EasyAuditUnitConversion'
 

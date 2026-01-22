@@ -1,0 +1,314 @@
+{
+  "intent": "Created comprehensive repository summary document for NZC EasyAudit accelerator project",
+  "findings": {
+    "project_overview": {
+      "name": "NZC EasyAudit",
+      "purpose": "Salesforce Net Zero Cloud accelerator providing step-by-step emissions calculations audit component",
+      "technology_stack": [
+        "Salesforce Net Zero Cloud",
+        "Lightning Web Components (LWC)",
+        "Aura Components",
+        "Apex",
+        "Salesforce API Version 65.0",
+        "Jest for LWC testing",
+        "Salesforce CLI"
+      ],
+      "primary_use_case": "Display transparent, step-by-step emissions calculations for Vehicle and Stationary Energy Use records"
+    },
+    "architecture": {
+      "lightning_web_components": [
+        {
+          "name": "nZC_EasyAudit",
+          "path": "force-app/main/default/lwc/nZC_EasyAudit/",
+          "purpose": "Main orchestrator component",
+          "responsibilities": [
+            "Receives recordId via @api",
+            "Calls Apex controller to fetch data",
+            "Determines record type (Vehicle vs Stationary)",
+            "Instantiates appropriate calculation class",
+            "Displays results in accordion format"
+          ],
+          "dependencies": [
+            "NZC_EasyAuditControllerV2 (Apex)",
+            "nZC_EasyAuditVehicleCalc (JS)",
+            "nZC_EasyAuditStationaryCalc (JS)",
+            "nZC_EasyAuditStep (LWC)"
+          ]
+        },
+        {
+          "name": "nZC_EasyAuditStep",
+          "path": "force-app/main/default/lwc/nZC_EasyAuditStep/",
+          "purpose": "Displays individual calculation steps",
+          "responsibilities": [
+            "Renders calculation lines",
+            "Displays record links",
+            "Provides expandable accordion sections"
+          ],
+          "props": ["stepInstruction"]
+        },
+        {
+          "name": "nZC_EasyAuditVehicleCalc",
+          "path": "force-app/main/default/lwc/nZC_EasyAuditVehicleCalc/",
+          "purpose": "Vehicle energy use emissions calculations",
+          "responsibilities": [
+            "Processes vehicle energy use data",
+            "Handles fuel efficiency conversions",
+            "Calculates emissions for vehicle types",
+            "Generates step-by-step instructions"
+          ],
+          "dependencies": [
+            "nZC_EasyAuditLogging",
+            "nZC_EasyAuditUnitConversion"
+          ]
+        },
+        {
+          "name": "nZC_EasyAuditStationaryCalc",
+          "path": "force-app/main/default/lwc/nZC_EasyAuditStationaryCalc/",
+          "purpose": "Stationary energy use emissions calculations",
+          "responsibilities": [
+            "Processes stationary energy use data",
+            "Handles electricity emission factors",
+            "Calculates refrigerant emissions",
+            "Handles PUE calculations",
+            "Generates step-by-step instructions"
+          ],
+          "dependencies": [
+            "nZC_EasyAuditLogging",
+            "nZC_EasyAuditUnitConversion"
+          ]
+        },
+        {
+          "name": "nZC_EasyAuditUnitConversion",
+          "path": "force-app/main/default/lwc/nZC_EasyAuditUnitConversion/",
+          "purpose": "Unit conversion utility",
+          "responsibilities": [
+            "Provides conversion factors",
+            "Converts between measurement systems",
+            "Handles fuel consumption unit conversions"
+          ]
+        },
+        {
+          "name": "nZC_EasyAuditLogging",
+          "path": "force-app/main/default/lwc/nZC_EasyAuditLogging/",
+          "purpose": "Calculation step creation utility",
+          "responsibilities": [
+            "Creates structured calculation step objects",
+            "Manages step collections",
+            "Formats calculation lines",
+            "Handles record link generation"
+          ]
+        }
+      ],
+      "aura_components": [
+        {
+          "name": "NZC_EasyAuditShell",
+          "path": "force-app/main/default/aura/NZC_EasyAuditShell/",
+          "purpose": "Aura wrapper for Lightning page compatibility",
+          "implements": [
+            "force:hasRecordId",
+            "flexipage:availableForRecordHome"
+          ],
+          "dependencies": ["nZC_EasyAudit (LWC)"]
+        }
+      ],
+      "apex_classes": [
+        {
+          "name": "NZC_EasyAuditControllerV2",
+          "path": "force-app/main/default/classes/NZC_EasyAuditControllerV2.cls",
+          "purpose": "Main Apex controller for data retrieval",
+          "sharing": "with sharing",
+          "key_methods": [
+            "getRecordInfo(String recordId)",
+            "getVehicleInfo()",
+            "getStationaryInfo()",
+            "getSetItemInfo()",
+            "getCustomFuelOrUnits()"
+          ],
+          "dependencies": [
+            "NZC_EasyAuditInfoWrapper",
+            "NZC_EasyAuditConstants"
+          ]
+        },
+        {
+          "name": "NZC_EasyAuditInfoWrapper",
+          "path": "force-app/main/default/classes/NZC_EasyAuditInfoWrapper.cls",
+          "purpose": "Data transfer object (DTO)",
+          "sharing": "with sharing",
+          "responsibilities": [
+            "Wraps energy use record data",
+            "Provides @AuraEnabled properties",
+            "Handles scope determination",
+            "Manages custom fuel/unit conversions"
+          ]
+        },
+        {
+          "name": "NZC_EasyAuditConstants",
+          "path": "force-app/main/default/classes/NZC_EasyAuditConstants.cls",
+          "purpose": "Centralized constants",
+          "sharing": "with sharing",
+          "constants": [
+            "Object names",
+            "Scope values",
+            "Fuel type constants",
+            "Default scope mappings"
+          ]
+        },
+        {
+          "name": "NZC_EasyAuditControllerV2Test",
+          "path": "force-app/main/default/classes/NZC_EasyAuditControllerV2Test.cls",
+          "purpose": "Test class for controller",
+          "test_methods": [
+            "testProcessStationary()",
+            "testProcessVehicle()",
+            "testCustomFuel()"
+          ]
+        }
+      ]
+    },
+    "data_model": {
+      "net_zero_cloud_objects": [
+        {
+          "name": "VehicleAssetEnrgyUse",
+          "purpose": "Vehicle energy use records",
+          "key_fields": [
+            "FuelConsumption",
+            "FuelConsumptionUnit",
+            "FuelType",
+            "Distance",
+            "DistanceUnit",
+            "FlightDurationInHours",
+            "AircraftFuelEconomy"
+          ],
+          "relationships": [
+            "VehicleAssetEmssnSrc (parent)",
+            "OtherEmssnFctr (emission factors)"
+          ]
+        },
+        {
+          "name": "StnryAssetEnrgyUse",
+          "purpose": "Stationary energy use records",
+          "key_fields": [
+            "FuelConsumption",
+            "FuelConsumptionUnit",
+            "FuelType",
+            "PowerUsageEffectiveness",
+            "OccupiedFloorArea",
+            "AllocatedRenewableEnergyInKwh"
+          ],
+          "relationships": [
+            "StnryAssetEnvrSrc (parent)",
+            "OtherEmssnFctr",
+            "ElectricityEmissionFactors",
+            "RefrigerantEmssnFctr"
+          ]
+        },
+        {
+          "name": "OtherEmssnFctrSetItem",
+          "purpose": "Emission factor set items",
+          "key_fields": [
+            "Co2EmissionFactor",
+            "Ch4EmissionFactor",
+            "N2oEmissionFactor",
+            "CalorificValue"
+          ]
+        },
+        {
+          "name": "SustnUomConversion",
+          "purpose": "Unit of measure conversions",
+          "key_fields": [
+            "FuelType",
+            "SourceUom",
+            "TargetUom",
+            "ConversionFactor"
+          ]
+        }
+      ],
+      "data_flow": [
+        "User navigates to energy use record",
+        "LWC receives recordId via Aura wrapper",
+        "Apex Controller queries record with related data",
+        "InfoWrapper structures data into DTO",
+        "Calculation class processes data",
+        "Logging utility formats steps",
+        "Step component displays in accordion"
+      ]
+    },
+    "key_features": [
+      "Step-by-step calculation display",
+      "Vehicle energy use calculations",
+      "Stationary energy use calculations",
+      "Unit conversion support",
+      "Scope determination",
+      "Custom fuel/unit framework"
+    ],
+    "directory_structure": {
+      "root": "NZC-EasyAudit/",
+      "key_directories": [
+        "force-app/main/default/aura/",
+        "force-app/main/default/classes/",
+        "force-app/main/default/lwc/",
+        ".cursor/rules/",
+        "scripts/"
+      ]
+    },
+    "development_guidelines": {
+      "apex_standards": [
+        "Follow Apex Enterprise Patterns where applicable",
+        "Use 'with sharing' for controllers",
+        "No SOQL in loops",
+        "Bulkify all queries",
+        "Test coverage >75% (prefer >85%)"
+      ],
+      "lwc_standards": [
+        "Use PascalCase for component names",
+        "Use camelCase for variables and methods",
+        "Use @api only for public properties",
+        "Handle errors gracefully",
+        "Use SLDS for styling"
+      ],
+      "architecture_note": "Current implementation uses simplified architecture (direct controller queries, no Selectors/Services pattern)"
+    },
+    "integration_points": [
+      "Net Zero Cloud objects and relationships",
+      "Salesforce Lightning Platform",
+      "Aura framework for page compatibility",
+      "Salesforce public npm packages only"
+    ],
+    "deployment": {
+      "methods": [
+        "One-Click GitHub Deploy",
+        "Workbench",
+        "Salesforce CLI"
+      ],
+      "post_deployment_steps": [
+        "Add NZC_EasyAuditShell component to Lightning pages",
+        "Configure on Vehicle/Stationary Energy Use pages",
+        "Test with sample records"
+      ]
+    },
+    "testing": {
+      "apex_tests": "NZC_EasyAuditControllerV2Test",
+      "lwc_tests": "Jest configuration in jest.config.js",
+      "coverage_requirements": ">75% (prefer >85%)"
+    }
+  },
+  "relevant_components": [
+    "nZC_EasyAudit",
+    "nZC_EasyAuditStep",
+    "nZC_EasyAuditVehicleCalc",
+    "nZC_EasyAuditStationaryCalc",
+    "nZC_EasyAuditUnitConversion",
+    "nZC_EasyAuditLogging",
+    "NZC_EasyAuditShell",
+    "NZC_EasyAuditControllerV2",
+    "NZC_EasyAuditInfoWrapper",
+    "NZC_EasyAuditConstants"
+  ],
+  "answer": "Created comprehensive repository summary in both Markdown (REPOSITORY_SUMMARY.md) and JSON (REPOSITORY_SUMMARY.json) formats. The JSON format follows the repo-shape rule structure template with intent, findings, relevant components, answer, and can include suggested actions.",
+  "suggested_actions": [
+    "Use REPOSITORY_SUMMARY.md for human-readable documentation",
+    "Use REPOSITORY_SUMMARY.json for programmatic/LLM consumption",
+    "Update JSON when architecture changes",
+    "Reference this summary when making code changes"
+  ]
+}

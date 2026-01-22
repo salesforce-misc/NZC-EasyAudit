@@ -1,0 +1,65 @@
+{
+  "metadata": {
+    "title": "Project Structure Reference",
+    "description": "Directives for LLMs on how to orient themselves within the codebase using the primary summary document.",
+    "priority": "critical",
+    "application_scope": "global",
+    "always_apply": true
+  },
+  "primary_resource": {
+    "filename": "REPOSITORY_SUMMARY.md",
+    "location": "./",
+    "description": "LLM-optimized overview of structure, architecture, and components."
+  },
+  "directives": {
+    "trigger_conditions": [
+      "User asks about project structure or architecture",
+      "User asks about technology stack",
+      "User needs to identify components and their purposes",
+      "User asks about relationships between codebase parts",
+      "Pre-computation context gathering before code changes",
+      "User asks about data models or key objects",
+      "User asks about deployment or development workflows"
+    ],
+    "output_requirements": {
+      "format": "json",
+      "enforcement": "strict",
+      "instruction": "All outputs must be strictly formatted as valid JSON objects. Do not use conversational filler or markdown outside the JSON block.",
+      "structure_template": {
+        "intent": "Brief summary of what was understood",
+        "findings": "Key information extracted from the summary document",
+        "relevant_components": ["List of specific components found"],
+        "answer": "The direct response to the user's query",
+        "suggested_actions": ["Next steps or relevant files to edit"]
+      }
+    },
+    "resource_contents_map": {
+      "overview": "Complete project overview and technology stack",
+      "architecture": "Detailed component architecture (LWC, Apex, Flows)",
+      "data": "Data model and object relationships",
+      "features": "Key features and functionalities",
+      "structure": "Directory structure and organization",
+      "standards": "Development guidelines and best practices",
+      "external": "Integration points and external dependencies"
+    },
+    "mandatory_workflow": [
+      {
+        "sequence": 1,
+        "action": "READ_FILE",
+        "target": "REPOSITORY_SUMMARY.md",
+        "rationale": "Establish baseline context before attempting specific tasks."
+      },
+      {
+        "sequence": 2,
+        "action": "INVOKE_TOOLS",
+        "tools": ["codebase_search", "grep", "read_file"],
+        "rationale": "Deep dive into specific components identified in step 1."
+      },
+      {
+        "sequence": 3,
+        "action": "EXECUTE_TASK",
+        "rationale": "Make informed decisions based on the comprehensive context gathered."
+      }
+    ]
+  }
+}
