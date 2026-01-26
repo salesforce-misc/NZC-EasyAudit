@@ -70,7 +70,9 @@ private class NZC_EasyAuditControllerV2Test {
         Schema.RecordTypeInfo recordTypeInfo = Schema.SObjectType.StnryAssetEnvrSrc
             .getRecordTypeInfosByDeveloperName().get('Commercial_Building');
         Id recordTypeId = recordTypeInfo != null ? recordTypeInfo.getRecordTypeId() : null;
-        if (recordTypeId != null)  assetRecord.put('RecordTypeId', recordTypeId);
+        if (recordTypeId != null) {
+            assetRecord.put('RecordTypeId', recordTypeId);
+        }
         insert assetRecord;
 
         StnryAssetEnrgyUse useRecord = new StnryAssetEnrgyUse(
@@ -103,7 +105,9 @@ private class NZC_EasyAuditControllerV2Test {
         Schema.RecordTypeInfo recordTypeInfo = Schema.SObjectType.VehicleAssetEmssnSrc
             .getRecordTypeInfosByDeveloperName().get('Fleet_Vehicle');
         Id recordTypeId = recordTypeInfo != null ? recordTypeInfo.getRecordTypeId() : null;
-        if (recordTypeId != null) vehicleAsset.put('RecordTypeId', recordTypeId);
+        if (recordTypeId != null) {
+            vehicleAsset.put('RecordTypeId', recordTypeId);
+        }
         insert vehicleAsset;
 
         VehicleAssetEnrgyUse energyUse = new VehicleAssetEnrgyUse(
@@ -123,7 +127,6 @@ private class NZC_EasyAuditControllerV2Test {
 
     static FuelType createFuel() {
         return new FuelType(
-                Id='0wUHn0000008ONfMAM',
                 MasterLabel='TestFuel',
                 DeveloperName='TestFuel'
         );
@@ -131,7 +134,6 @@ private class NZC_EasyAuditControllerV2Test {
 
     static SustainabilityUom createFuelUnit() {
         return new SustainabilityUom(
-                Id='0wVHn0000008OJcMAM',
                 MasterLabel='TestFuel',
                 DeveloperName='TestFuel'
         );
@@ -139,7 +141,6 @@ private class NZC_EasyAuditControllerV2Test {
 
     static SustnUomConversion createFuelConversion(String fuelType, String sourceUnit, String targetUnit) {
         return new SustnUomConversion(
-                Id='0wYHn0000008OJmMAM',
                 MasterLabel='TestFuel',
                 DeveloperName='TestFuel',
                 FuelType=fuelType,
@@ -244,22 +245,8 @@ private class NZC_EasyAuditControllerV2Test {
         Assert.isNull(result.customFuelConversion);
     }
 
-    @IsTest
-    static void testCustomFuel() {
-        NZC_EasyAuditInfoWrapper.OVERRIDE_CUSTOM_FUEL = true;
-        NZC_EasyAuditInfoWrapper.OVERRIDE_CONVERSION = createFuelConversion(createFuel().Id, createFuelUnit().Id, 'kWH');
-
-        StnryAssetEnrgyUse useRecord = [
-                SELECT Id
-                FROM StnryAssetEnrgyUse
-                LIMIT 1
-        ];
-
-        Test.startTest();
-        NZC_EasyAuditInfoWrapper result = NZC_EasyAuditControllerV2.getRecordInfo(useRecord.Id);
-        Test.stopTest();
-
-        Assert.areEqual(NZC_EasyAuditConstants.OBJECT_STATIONARY_USE, result.objectName);
+    private static void assertBasicRecordFields(NZC_EasyAuditInfoWrapper result, String expectedObjectName) {
+        Assert.areEqual(expectedObjectName, result.objectName);
         Assert.isNotNull(result.recordId);
         Assert.isNotNull(result.otherSetId);
         Assert.isNotNull(result.otherSetName);
@@ -268,12 +255,20 @@ private class NZC_EasyAuditControllerV2Test {
         Assert.areNotEqual(0, result.FuelConsumption);
         Assert.isNotNull(result.FuelConsumptionUnit);
         Assert.isNotNull(result.FuelType);
+    }
+
+    private static void assertEmissionFactors(NZC_EasyAuditInfoWrapper result) {
         Assert.isNotNull(result.Ch4EmissionFactorUnit);
         Assert.isNotNull(result.Ch4EmissionFactor);
         Assert.isNotNull(result.N2oEmissionFactorUnit);
         Assert.isNotNull(result.N2oEmissionFactor);
         Assert.isNotNull(result.Co2EmissionFactorUnit);
         Assert.isNotNull(result.Co2EmissionFactor);
+        Assert.isNotNull(result.CalorificValue);
+        Assert.isNotNull(result.CalorificValueUnit);
+    }
+
+    private static void assertStationarySpecificFields(NZC_EasyAuditInfoWrapper result) {
         Assert.isNotNull(result.RecordTypeName);
         Assert.isNotNull(result.SuplScope1Emissions);
         Assert.isNotNull(result.SuplScope2LocationBasedEmssn);
@@ -287,12 +282,33 @@ private class NZC_EasyAuditControllerV2Test {
         Assert.isNotNull(result.RefrigerantGWP);
         Assert.isNotNull(result.RefrigerantName);
         Assert.isNotNull(result.RefrigerantId);
-        Assert.isNotNull(result.CalorificValue);
-        Assert.isNotNull(result.CalorificValueUnit);
+    }
+
+    private static void assertCommonFields(NZC_EasyAuditInfoWrapper result) {
         Assert.isNotNull(result.IsOwned);
         Assert.isNotNull(result.Scope);
         Assert.isNotNull(result.baseUrl);
+    }
+
+    @IsTest
+    static void testCustomFuel() {
+        NZC_EasyAuditInfoWrapper.overrideCustomFuel = true;
+        NZC_EasyAuditInfoWrapper.overrideConversion = createFuelConversion(createFuel().Id, createFuelUnit().Id, 'kWH');
+
+        StnryAssetEnrgyUse useRecord = [
+                SELECT Id
+                FROM StnryAssetEnrgyUse
+                LIMIT 1
+        ];
+
+        Test.startTest();
+        NZC_EasyAuditInfoWrapper result = NZC_EasyAuditControllerV2.getRecordInfo(useRecord.Id);
+        Test.stopTest();
+
+        assertBasicRecordFields(result, NZC_EasyAuditConstants.OBJECT_STATIONARY_USE);
+        assertEmissionFactors(result);
+        assertStationarySpecificFields(result);
+        assertCommonFields(result);
         Assert.isNotNull(result.customFuelConversion);
-        System.debug(JSON.serializePretty(result));
     }
 }
