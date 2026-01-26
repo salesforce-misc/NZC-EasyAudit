@@ -18,7 +18,7 @@ public with sharing class NZC_EasyAuditInfoWrapper {
         } else {
             this.objectName = null;
         }
-        
+
         this.recordId = recordId;
         this.populateUrl();
     }
@@ -120,6 +120,7 @@ public with sharing class NZC_EasyAuditInfoWrapper {
     @AuraEnabled
     public String CalorificValueUnit {get;set;}
 
+    @SuppressWarnings('PMD.AvoidBooleanMethodParameters')
     @AuraEnabled
     public Boolean IsOwned {get;set;}
     @AuraEnabled

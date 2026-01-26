@@ -10,31 +10,18 @@ public with sharing class NZC_EasyAuditControllerV2 {
     public NZC_EasyAuditInfoWrapper infoWrapper;
 
     public NZC_EasyAuditControllerV2(Id recordId) {
-        System.debug('[NZC_EasyAuditControllerV2] Constructor - recordId: ' + recordId);
         infoWrapper = new NZC_EasyAuditInfoWrapper(recordId);
-        System.debug('[NZC_EasyAuditControllerV2] Constructor - infoWrapper created, objectName: ' + infoWrapper.objectName);
     }
 
     public NZC_EasyAuditInfoWrapper processWrapper() {
-        System.debug('[NZC_EasyAuditControllerV2] processWrapper - Entry');
-        System.debug('[NZC_EasyAuditControllerV2] processWrapper - objectName: ' + infoWrapper.objectName);
-        System.debug('[NZC_EasyAuditControllerV2] processWrapper - objectName isBlank: ' + String.isBlank(infoWrapper.objectName));
-        System.debug('[NZC_EasyAuditControllerV2] processWrapper - OBJECT_VEHICLE_USE: ' + NZC_EasyAuditConstants.OBJECT_VEHICLE_USE);
-        System.debug('[NZC_EasyAuditControllerV2] processWrapper - OBJECT_STATIONARY_USE: ' + NZC_EasyAuditConstants.OBJECT_STATIONARY_USE);
-        
         if (String.isNotBlank(infoWrapper.objectName)) {
             if (infoWrapper.objectName == NZC_EasyAuditConstants.OBJECT_VEHICLE_USE) {
-                System.debug('[NZC_EasyAuditControllerV2] processWrapper - Calling getVehicleInfo');
                 getVehicleInfo();
             }
             if (infoWrapper.objectName == NZC_EasyAuditConstants.OBJECT_STATIONARY_USE) {
-                System.debug('[NZC_EasyAuditControllerV2] processWrapper - Calling getStationaryInfo');
                 getStationaryInfo();
             }
-        } else {
-            System.debug('[NZC_EasyAuditControllerV2] processWrapper - objectName is blank, skipping processing');
         }
-        System.debug('[NZC_EasyAuditControllerV2] processWrapper - Returning infoWrapper');
         return infoWrapper;
     }
 
@@ -106,6 +93,7 @@ public with sharing class NZC_EasyAuditControllerV2 {
                 SELECT FuelType, SourceUom, TargetUom, ConversionFactor
                 FROM SustnUomConversion
                 WITH USER_MODE
+                LIMIT 10000
         ]) {
             conversionMap.put((conversion.FuelType+''+conversion.SourceUom).hashCode(), conversion);
         }
@@ -141,23 +129,11 @@ public with sharing class NZC_EasyAuditControllerV2 {
 
     @AuraEnabled
     public static NZC_EasyAuditInfoWrapper getRecordInfo(String recordId) {
-        System.debug('[NZC_EasyAuditControllerV2] getRecordInfo - Entry point called');
-        System.debug('[NZC_EasyAuditControllerV2] getRecordInfo - recordId: ' + recordId);
-        System.debug('[NZC_EasyAuditControllerV2] getRecordInfo - recordId isBlank: ' + String.isBlank(recordId));
-        
         try {
             NZC_EasyAuditControllerV2 instance = new NZC_EasyAuditControllerV2(recordId);
-            System.debug('[NZC_EasyAuditControllerV2] getRecordInfo - Instance created, infoWrapper.objectName: ' + instance.infoWrapper.objectName);
-            
             NZC_EasyAuditInfoWrapper result = instance.processWrapper();
-            System.debug('[NZC_EasyAuditControllerV2] getRecordInfo - processWrapper completed');
-            System.debug('[NZC_EasyAuditControllerV2] getRecordInfo - result.objectName: ' + result.objectName);
-            System.debug('[NZC_EasyAuditControllerV2] getRecordInfo - result keys: ' + JSON.serialize(result).substring(0, Math.min(500, JSON.serialize(result).length())));
-            
             return result;
         } catch (Exception e) {
-            System.debug('[NZC_EasyAuditControllerV2] getRecordInfo - EXCEPTION: ' + e.getMessage());
-            System.debug('[NZC_EasyAuditControllerV2] getRecordInfo - Stack trace: ' + e.getStackTraceString());
             throw e;
         }
     }
