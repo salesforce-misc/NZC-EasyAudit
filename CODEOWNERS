@@ -1,0 +1,20 @@
+# Comment line immediately above ownership line is reserved for related other information. Please be careful while editing.
+#ECCN:Open Source
+#GUSINFO:Open Source,Open Source Workflow
+
+# Default owners for the entire repository
+* @jvillalpando_sfemu
+
+# Salesforce-specific files
+/.cursor/ @jvillalpando_sfemu
+/.github/ @jvillalpando_sfemu
+
+# Documentation
+/README.md @jvillalpando_sfemu
+/CONTRIBUTING.md @jvillalpando_sfemu
+/LICENSE* @jvillalpando_sfemu
+/SECURITY.md @jvillalpando_sfemu
+/CODE_OF_CONDUCT.md @jvillalpando_sfemu
+
+# Source code
+/force-app/ @jvillalpando_sfemu
