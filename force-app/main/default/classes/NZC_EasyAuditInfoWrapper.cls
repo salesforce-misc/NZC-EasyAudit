@@ -12,9 +12,25 @@ public with sharing class NZC_EasyAuditInfoWrapper {
     private static SustnUomConversion OVERRIDE_CONVERSION;
 
     public NZC_EasyAuditInfoWrapper(Id recordId) {
-        this.objectName = recordId.getSobjectType() + '';
+        System.debug('[NZC_EasyAuditInfoWrapper] Constructor - Entry, recordId: ' + recordId);
+        System.debug('[NZC_EasyAuditInfoWrapper] Constructor - recordId is null: ' + (recordId == null));
+        
+        if (recordId != null) {
+            Schema.SObjectType sObjectType = recordId.getSobjectType();
+            System.debug('[NZC_EasyAuditInfoWrapper] Constructor - sObjectType: ' + sObjectType);
+            System.debug('[NZC_EasyAuditInfoWrapper] Constructor - sObjectType name: ' + (sObjectType != null ? sObjectType.getDescribe().getName() : 'null'));
+            
+            this.objectName = recordId.getSobjectType() + '';
+            System.debug('[NZC_EasyAuditInfoWrapper] Constructor - objectName set to: ' + this.objectName);
+        } else {
+            System.debug('[NZC_EasyAuditInfoWrapper] Constructor - ERROR: recordId is null!');
+            this.objectName = null;
+        }
+        
         this.recordId = recordId;
+        System.debug('[NZC_EasyAuditInfoWrapper] Constructor - recordId assigned: ' + this.recordId);
         this.populateUrl();
+        System.debug('[NZC_EasyAuditInfoWrapper] Constructor - populateUrl completed');
     }
 
     @AuraEnabled
@@ -215,15 +231,34 @@ public with sharing class NZC_EasyAuditInfoWrapper {
         try {
             Id castUnitId = (Id) this.FuelConsumptionUnit;
             isCustomUnit = castUnitId.getSobjectType() + '' == 'SustainabilityUom';
-        } catch (Exception e) {
-            // unit is standard
+            System.debug('[NZC_EasyAuditInfoWrapper] isCustomFuelOrUnit - FuelConsumptionUnit is custom Id: ' + castUnitId);
+        } catch (TypeException e) {
+            // FuelConsumptionUnit is a standard string value, not a custom unit ID
+            // This is expected behavior when FuelConsumptionUnit is a standard unit
+            System.debug('[NZC_EasyAuditInfoWrapper] isCustomFuelOrUnit - FuelConsumptionUnit is standard unit (TypeException): ' + this.FuelConsumptionUnit);
+            isCustomUnit = false; // Explicitly set to false for standard units
+        } catch (StringException e) {
+            // FuelConsumptionUnit is a standard string value (e.g., "kWh"), not a valid Id
+            // This is expected behavior when FuelConsumptionUnit is a standard unit
+            System.debug('[NZC_EasyAuditInfoWrapper] isCustomFuelOrUnit - FuelConsumptionUnit is standard unit (StringException): ' + this.FuelConsumptionUnit);
+            isCustomUnit = false; // Explicitly set to false for standard units
         }
         try {
             Id castUnitId = (Id) this.FuelType;
             isCustomFuel = castUnitId.getSobjectType() + '' == 'FuelType';
-        } catch (Exception e) {
-            // fuel is standard
+            System.debug('[NZC_EasyAuditInfoWrapper] isCustomFuelOrUnit - FuelType is custom Id: ' + castUnitId);
+        } catch (TypeException e) {
+            // FuelType is a standard string value, not a custom fuel ID
+            // This is expected behavior when FuelType is a standard fuel type
+            System.debug('[NZC_EasyAuditInfoWrapper] isCustomFuelOrUnit - FuelType is standard fuel (TypeException): ' + this.FuelType);
+            isCustomFuel = false; // Explicitly set to false for standard fuel types
+        } catch (StringException e) {
+            // FuelType is a standard string value (e.g., "Electricity"), not a valid Id
+            // This is expected behavior when FuelType is a standard fuel type
+            System.debug('[NZC_EasyAuditInfoWrapper] isCustomFuelOrUnit - FuelType is standard fuel (StringException): ' + this.FuelType);
+            isCustomFuel = false; // Explicitly set to false for standard fuel types
         }
+        System.debug('[NZC_EasyAuditInfoWrapper] isCustomFuelOrUnit - Result: isCustomUnit=' + isCustomUnit + ', isCustomFuel=' + isCustomFuel + ', OVERRIDE=' + OVERRIDE_CUSTOM_FUEL);
         return isCustomUnit || isCustomFuel || OVERRIDE_CUSTOM_FUEL;
     }
 
@@ -253,6 +288,6 @@ public with sharing class NZC_EasyAuditInfoWrapper {
     }
 
     private void populateUrl() {
-        this.baseUrl = Url.getSalesforceBaseUrl().toExternalForm();
+        this.baseUrl = Url.getOrgDomainUrl().toExternalForm();
     }
 }

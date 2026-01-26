@@ -1,0 +1,16 @@
+# ======================================================================
+# CODE ANALYZER CONFIGURATION
+# To learn more about this configuration, visit:
+#   https://developer.salesforce.com/docs/platform/salesforce-code-analyzer/guide/config-custom.html
+# ======================================================================
+
+# Engine specific custom configuration settings
+engines:
+  # Disable the flow engine since Python is not available
+  flow:
+    disable_engine: true
+
+  # Disable ESLint engine due to configuration compatibility issue
+  # The eslint.config.js uses flat config format which may not be fully compatible
+  eslint:
+    disable_engine: true

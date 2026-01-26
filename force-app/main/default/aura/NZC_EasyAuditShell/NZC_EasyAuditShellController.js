@@ -7,5 +7,11 @@
 
 ({
     doInit: function(cmp) {
+        // #region agent log
+        console.log('[NZC_EasyAuditShell] doInit - Aura component initialized', {
+            recordId: cmp.get('v.recordId'),
+            recordIdType: typeof cmp.get('v.recordId')
+        });
+        // #endregion
     }
 });
