@@ -349,7 +349,19 @@ This is acceptable for a read-only audit component but should be considered if e
 ### Salesforce Platform
 - **Lightning Platform**: Uses Lightning Web Components framework
 - **Aura Framework**: Uses Aura wrapper for Lightning page compatibility
-- **Salesforce Base URL**: Uses `Url.getSalesforceBaseUrl()` for record links
+- **Salesforce Base URL**: Uses `Url.getOrgDomainUrl()` for record links (API 65.0 compatible)
+
+### Code Quality & Security
+- **SF Code Analyzer**: Integrated for continuous code quality monitoring
+  - Configuration: `code-analyzer.yml`
+  - Engines: PMD (Apex), ESLint disabled (configuration compatibility)
+  - Flow engine disabled (Python dependency)
+- **Security Enhancements**:
+  - All SOQL queries use `WITH USER_MODE` to enforce user-level CRUD and FLS
+  - Proper exception handling with specific exception types
+  - No hardcoded IDs in test classes
+  - Optimized DescribeSObjectResult usage in tests
+- **Code Standards**: Follows Salesforce coding standards and Apex best practices
 
 ### External Dependencies
 - **npm packages**: All Salesforce public packages (@salesforce/*)
@@ -450,7 +462,9 @@ When working with this codebase:
 
 - **Source API Version**: 65.0
 - **Package Version**: 55.0 (in package.xml)
-- **Last Updated**: 2024
+- **Last Updated**: January 2026
+- **Code Quality**: Integrated with SF Code Analyzer
+- **Security**: All queries enforce user-level security with `WITH USER_MODE`
 
 ---
 

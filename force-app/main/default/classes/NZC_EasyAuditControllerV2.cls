@@ -35,6 +35,7 @@ public with sharing class NZC_EasyAuditControllerV2 {
                         SuplScope1Emissions, OtherEmssnFctr.Name
                 FROM VehicleAssetEnrgyUse
                 WHERE Id =: this.infoWrapper.recordId
+                WITH USER_MODE
         ];
 
         this.infoWrapper.populateVehicleValues(requestedVehicleInfo);
@@ -56,6 +57,7 @@ public with sharing class NZC_EasyAuditControllerV2 {
                 FROM OtherEmssnFctrSetItem
                 WHERE FuelType =: this.infoWrapper.FuelType
                 AND ParentEmissionFactorId =: this.infoWrapper.otherSetId
+                WITH USER_MODE
         ];
         return items.size() > 0? items[0] : null;
     }
@@ -70,6 +72,7 @@ public with sharing class NZC_EasyAuditControllerV2 {
                         AllocatedRenewableEnergyInKwh, OtherEmssnFctr.Name, ElectricityEmissionFactors.Name, RefrigerantEmssnFctr.Name
                 FROM StnryAssetEnrgyUse
                 WHERE Id =: this.infoWrapper.recordId
+                WITH USER_MODE
         ];
 
         // if fuel is electricity > pull out emissions factors
@@ -89,6 +92,8 @@ public with sharing class NZC_EasyAuditControllerV2 {
         for (SustnUomConversion conversion : [
                 SELECT FuelType, SourceUom, TargetUom, ConversionFactor
                 FROM SustnUomConversion
+                WITH USER_MODE
+                LIMIT 10000
         ]) {
             conversionMap.put((conversion.FuelType+''+conversion.SourceUom).hashCode(), conversion);
         }
@@ -101,6 +106,7 @@ public with sharing class NZC_EasyAuditControllerV2 {
                 SELECT MasterLabel
                 FROM FuelType
                 WHERE Id =: this.infoWrapper.FuelType
+                WITH USER_MODE
         ];
         if (fuels.isEmpty()) {
             return this.infoWrapper.FuelType;
@@ -113,6 +119,7 @@ public with sharing class NZC_EasyAuditControllerV2 {
                 SELECT MasterLabel
                 FROM SustainabilityUom
                 WHERE Id =: this.infoWrapper.FuelConsumptionUnit
+                WITH USER_MODE
         ];
         if (units.isEmpty()) {
             return this.infoWrapper.FuelConsumptionUnit;
@@ -122,7 +129,12 @@ public with sharing class NZC_EasyAuditControllerV2 {
 
     @AuraEnabled
     public static NZC_EasyAuditInfoWrapper getRecordInfo(String recordId) {
-        NZC_EasyAuditControllerV2 instance = new NZC_EasyAuditControllerV2(recordId);
-        return instance.processWrapper();
+        try {
+            NZC_EasyAuditControllerV2 instance = new NZC_EasyAuditControllerV2(recordId);
+            NZC_EasyAuditInfoWrapper result = instance.processWrapper();
+            return result;
+        } catch (Exception e) {
+            throw e;
+        }
     }
 }

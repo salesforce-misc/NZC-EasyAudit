@@ -268,12 +268,44 @@
       ],
       "architecture_note": "Current implementation uses simplified architecture (direct controller queries, no Selectors/Services pattern)"
     },
-    "integration_points": [
-      "Net Zero Cloud objects and relationships",
-      "Salesforce Lightning Platform",
-      "Aura framework for page compatibility",
-      "Salesforce public npm packages only"
-    ],
+    "integration_points": {
+      "net_zero_cloud": [
+        "VehicleAssetEnrgyUse",
+        "StnryAssetEnrgyUse",
+        "OtherEmssnFctrSetItem",
+        "ElectricityEmssnFctrSet",
+        "RefrigerantEmssnFctr",
+        "SustnUomConversion",
+        "FuelType",
+        "SustainabilityUom"
+      ],
+      "salesforce_platform": [
+        "Lightning Web Components framework",
+        "Aura framework for page compatibility",
+        "Url.getOrgDomainUrl() for record links (API 65.0)"
+      ],
+      "code_quality": {
+        "code_analyzer": {
+          "enabled": true,
+          "config_file": "code-analyzer.yml",
+          "engines": {
+            "pmd": "enabled",
+            "eslint": "disabled",
+            "flow": "disabled"
+          }
+        },
+        "security": [
+          "All SOQL queries use WITH USER_MODE",
+          "User-level CRUD and FLS enforcement",
+          "Proper exception handling",
+          "No hardcoded IDs in tests"
+        ]
+      },
+      "external_dependencies": [
+        "Salesforce public npm packages only",
+        "No external APIs"
+      ]
+    },
     "deployment": {
       "methods": [
         "One-Click GitHub Deploy",
@@ -304,7 +336,7 @@
     "NZC_EasyAuditInfoWrapper",
     "NZC_EasyAuditConstants"
   ],
-  "answer": "Created comprehensive repository summary in both Markdown (REPOSITORY_SUMMARY.md) and JSON (REPOSITORY_SUMMARY.json) formats. The JSON format follows the repo-shape rule structure template with intent, findings, relevant components, answer, and can include suggested actions.",
+  "answer": "Created comprehensive repository summary in both Markdown (REPOSITORY_SUMMARY.md) and JSON (REPOSITORY_SUMMARY.json) formats. The JSON format follows the repo-shape rule structure template with intent, findings, relevant components, answer, and can include suggested actions. Updated January 2026 to reflect code quality improvements, security enhancements (WITH USER_MODE), and SF Code Analyzer integration.",
   "suggested_actions": [
     "Use REPOSITORY_SUMMARY.md for human-readable documentation",
     "Use REPOSITORY_SUMMARY.json for programmatic/LLM consumption",

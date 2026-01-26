@@ -5,14 +5,20 @@
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/Apache-2.0
  */
 
+@SuppressWarnings('PMD.ExcessivePublicCount, PMD.PropertyNamingConventions')
 public with sharing class NZC_EasyAuditInfoWrapper {
     @TestVisible
-    private static Boolean OVERRIDE_CUSTOM_FUEL = false;
+    private static Boolean overrideCustomFuel = false;
     @TestVisible
-    private static SustnUomConversion OVERRIDE_CONVERSION;
+    private static SustnUomConversion overrideConversion;
 
     public NZC_EasyAuditInfoWrapper(Id recordId) {
-        this.objectName = recordId.getSobjectType() + '';
+        if (recordId != null) {
+            this.objectName = String.valueOf(recordId.getSobjectType());
+        } else {
+            this.objectName = null;
+        }
+
         this.recordId = recordId;
         this.populateUrl();
     }
@@ -114,6 +120,7 @@ public with sharing class NZC_EasyAuditInfoWrapper {
     @AuraEnabled
     public String CalorificValueUnit {get;set;}
 
+    @SuppressWarnings('PMD.AvoidBooleanMethodParameters')
     @AuraEnabled
     public Boolean IsOwned {get;set;}
     @AuraEnabled
@@ -215,23 +222,37 @@ public with sharing class NZC_EasyAuditInfoWrapper {
         try {
             Id castUnitId = (Id) this.FuelConsumptionUnit;
             isCustomUnit = castUnitId.getSobjectType() + '' == 'SustainabilityUom';
-        } catch (Exception e) {
-            // unit is standard
+        } catch (TypeException e) {
+            // FuelConsumptionUnit is a standard string value, not a custom unit ID
+            // This is expected behavior when FuelConsumptionUnit is a standard unit
+            isCustomUnit = false; // Explicitly set to false for standard units
+        } catch (StringException e) {
+            // FuelConsumptionUnit is a standard string value (e.g., "kWh"), not a valid Id
+            // This is expected behavior when FuelConsumptionUnit is a standard unit
+            isCustomUnit = false; // Explicitly set to false for standard units
         }
         try {
             Id castUnitId = (Id) this.FuelType;
             isCustomFuel = castUnitId.getSobjectType() + '' == 'FuelType';
-        } catch (Exception e) {
-            // fuel is standard
+        } catch (TypeException e) {
+            // FuelType is a standard string value, not a custom fuel ID
+            // This is expected behavior when FuelType is a standard fuel type
+            isCustomFuel = false; // Explicitly set to false for standard fuel types
+        } catch (StringException e) {
+            // FuelType is a standard string value (e.g., "Electricity"), not a valid Id
+            // This is expected behavior when FuelType is a standard fuel type
+            isCustomFuel = false; // Explicitly set to false for standard fuel types
         }
-        return isCustomUnit || isCustomFuel || OVERRIDE_CUSTOM_FUEL;
+        return isCustomUnit || isCustomFuel || overrideCustomFuel;
     }
 
     public void convertFuelType(Map<Integer, SustnUomConversion> conversions, String fuelName, String unitName) {
         Integer hashKey = (this.FuelType + this.FuelConsumptionUnit).hashCode();
         SustnUomConversion conversion = conversions.get(hashKey);
 
-        if (OVERRIDE_CUSTOM_FUEL) conversion = OVERRIDE_CONVERSION;
+        if (overrideCustomFuel) {
+            conversion = overrideConversion;
+        }
 
         customFuelConversion = 'Flexible fuels framework used';
         customFuelConversion += ', Fuel name : ' + fuelName;
@@ -253,6 +274,6 @@ public with sharing class NZC_EasyAuditInfoWrapper {
     }
 
     private void populateUrl() {
-        this.baseUrl = Url.getSalesforceBaseUrl().toExternalForm();
+        this.baseUrl = Url.getOrgDomainUrl().toExternalForm();
     }
 }

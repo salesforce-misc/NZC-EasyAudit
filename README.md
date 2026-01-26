@@ -178,6 +178,13 @@ This accelerator contains the following metadata:
 - **1 Apex Test Class** (`NZC_EasyAuditControllerV2Test`)
 - **1 Aura Component** (`NZC_EasyAuditShell`)
 
+### 🔒 Security & Code Quality
+
+- **API Version**: All components use API version 65.0 for compatibility with latest Salesforce features
+- **Security**: All SOQL queries use `WITH USER_MODE` to enforce user-level CRUD and field-level security (FLS)
+- **Code Quality**: Integrated with Salesforce Code Analyzer for continuous code quality monitoring
+- **Best Practices**: Follows Salesforce coding standards and Apex best practices
+
 ### Architecture Diagram
 
 ```mermaid
