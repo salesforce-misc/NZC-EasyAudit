@@ -60,19 +60,26 @@ Ensure you have test records available:
 
 The NZC EasyAudit component requires read access to multiple Net Zero Cloud objects and fields. Configure security using either **Permission Sets** (recommended) or **Profiles**.
 
-### 2.1 Option A: Create Permission Set (Recommended)
+> **Quick Start:** A permission set (`NZC EasyAudit Access`) is included in the deployment package with Apex class access pre-configured. You only need to add object/field permissions and assign it to users. See [Option A](#21-option-a-use-deployed-permission-set-recommended) below.
 
-Creating a permission set allows you to grant access without modifying standard profiles.
+### 2.1 Option A: Use Deployed Permission Set (Recommended)
 
-#### Step 1: Create Permission Set
+**Note:** A permission set named `NZC EasyAudit Access` (API Name: `NZC_EasyAudit_Access`) is included in the deployment package. This permission set includes Apex class access for the three required Apex classes. You only need to:
+
+1. **Assign Object and Field Permissions** (see Step 2 below)
+2. **Assign the Permission Set to Users** (see Step 5 below)
+
+If you prefer to create a custom permission set or need to modify the existing one, follow the manual creation steps in [Option B: Manual Permission Set Creation](#22-option-b-manual-permission-set-creation-optional).
+
+#### Step 1: Verify Permission Set Deployment
 
 1. Navigate to **Setup** → **Permission Sets**
-2. Click **New**
-3. Enter the following:
-   - **Label:** `NZC EasyAudit Access`
-   - **API Name:** `NZC_EasyAudit_Access` (auto-populated)
-   - **Description:** `Provides access to NZC EasyAudit component and required Net Zero Cloud objects`
-4. Click **Save**
+2. Verify that `NZC EasyAudit Access` exists
+3. Click on the permission set to review its current configuration
+4. **Note:** The permission set includes Apex class access for:
+   - `NZC_EasyAuditControllerV2`
+   - `NZC_EasyAuditConstants`
+   - `NZC_EasyAuditInfoWrapper`
 
 #### Step 2: Assign Object Permissions
 
@@ -139,21 +146,28 @@ For each object above, configure field-level security:
 **SustainabilityUom:**
 - MasterLabel
 
-#### Step 4: Assign Apex Class Access
+#### Step 3: Verify Apex Class Access (Already Configured)
 
+The deployed permission set already includes Apex class access for:
+- `NZC_EasyAuditControllerV2`
+- `NZC_EasyAuditConstants`
+- `NZC_EasyAuditInfoWrapper`
+
+**Verification:**
 1. In the permission set, click **Apex Class Access**
-2. Click **Edit**
-3. Move the following classes to **Enabled Apex Classes**:
-   - `NZC_EasyAuditControllerV2`
-   - `NZC_EasyAuditConstants`
-   - `NZC_EasyAuditInfoWrapper`
-4. Click **Save**
+2. Verify the three classes listed above are in the **Enabled Apex Classes** section
+3. If any are missing, add them manually
 
-#### Step 5: Assign Lightning Web Component Access
+#### Step 4: Lightning Web Component Access (Optional)
 
+**Note:** Lightning Web Components typically don't require explicit permission set access if:
+- They're exposed (`isExposed=true` in their metadata)
+- Users have access to the Apex classes the components call
+
+If you need to restrict LWC access, you can add it manually:
 1. In the permission set, click **Lightning Web Component Access**
 2. Click **Edit**
-3. Move the following components to **Enabled Lightning Web Components**:
+3. Move the following components to **Enabled Lightning Web Components** (if needed):
    - `nZC_EasyAudit`
    - `nZC_EasyAuditStep`
    - `nZC_EasyAuditVehicleCalc`
@@ -162,7 +176,7 @@ For each object above, configure field-level security:
    - `nZC_EasyAuditLogging`
 4. Click **Save**
 
-#### Step 6: Assign Permission Set to Users
+#### Step 5: Assign Permission Set to Users
 
 1. Navigate to **Setup** → **Permission Sets**
 2. Click **NZC EasyAudit Access**
@@ -172,16 +186,17 @@ For each object above, configure field-level security:
 6. Click **Assign**
 7. Click **Done**
 
-### 2.2 Option B: Update Profiles (Alternative)
+### 2.3 Option C: Update Profiles (Alternative)
 
-If you prefer to update profiles directly:
+If you prefer to update profiles directly instead of using permission sets:
 
 1. Navigate to **Setup** → **Profiles**
 2. Select the profile(s) to update
-3. Follow the same steps as Option A (Sections 2.1.2 through 2.1.5)
+3. Follow the same steps as Option A (Steps 2 through 4)
 4. **Note:** Profile updates affect all users with that profile, so use caution
+5. **Recommendation:** Use permission sets instead of profiles for better flexibility and easier management
 
-### 2.3 Sharing Rules Consideration
+### 2.4 Sharing Rules Consideration
 
 The Apex classes use `with sharing`, which means they respect:
 - **Organization-wide defaults (OWD)**
@@ -364,7 +379,7 @@ Test the component thoroughly before making it available to all users.
 **Solutions:**
 1. Verify component is added to the page (Section 3.1 or 3.2)
 2. Verify page is activated
-3. Check Lightning Web Component access (Section 2.1.5)
+3. Check Lightning Web Component access (Section 2.1, Step 4)
 4. Verify page assignment (Section 3.4)
 
 ### Issue: "Insufficient Privileges" Error
@@ -376,10 +391,10 @@ Test the component thoroughly before making it available to all users.
 - Sharing rules preventing record access
 
 **Solutions:**
-1. Verify permission set/profile includes all required objects (Section 2.1.2)
-2. Verify field-level security is enabled (Section 2.1.3)
-3. Verify Apex class access (Section 2.1.4)
-4. Check sharing settings (Section 2.3)
+1. Verify permission set/profile includes all required objects (Section 2.1, Step 2)
+2. Verify field-level security is enabled (Section 2.1, Step 2)
+3. Verify Apex class access (Section 2.1, Step 3)
+4. Check sharing settings (Section 2.4)
 
 ### Issue: Calculations Not Displaying
 
@@ -406,7 +421,7 @@ Test the component thoroughly before making it available to all users.
 **Solutions:**
 1. Check browser console for errors
 2. Check Salesforce debug logs for Apex errors
-3. Verify all required fields are accessible (Section 2.1.3)
+3. Verify all required fields are accessible (Section 2.1, Step 2)
 4. Test Apex class directly (Section 4.1)
 5. **If you see "Invalid id" errors in debug logs:** This was fixed in a recent update. Ensure you have the latest version deployed. The issue occurred when standard units (like "kWh") or fuel types (like "Electricity") were incorrectly treated as custom Ids.
 
@@ -578,12 +593,12 @@ Use this checklist to ensure all configuration steps are completed:
 - [ ] Sample test records are available
 
 ### Security Configuration
-- [ ] Permission set created (or profiles updated)
+- [ ] Permission set verified (NZC EasyAudit Access is deployed)
 - [ ] Object permissions configured (Read access)
 - [ ] Field-level security configured (Read access)
-- [ ] Apex class access granted
-- [ ] Lightning Web Component access granted
-- [ ] Permission set assigned to users (or profiles updated)
+- [ ] Apex class access verified (pre-configured in deployed permission set)
+- [ ] Lightning Web Component access configured (if needed)
+- [ ] Permission set assigned to users
 - [ ] Sharing rules reviewed and configured
 
 ### Lightning Page Configuration
