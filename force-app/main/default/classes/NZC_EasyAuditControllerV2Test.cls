@@ -67,7 +67,9 @@ private class NZC_EasyAuditControllerV2Test {
                 IsCompanyOwnedAsset = true
         );
 
-        Id recordTypeId = StnryAssetEnvrSrc.SObjectType.getDescribe().getRecordTypeInfosByDeveloperName().get('Commercial_Building')?.getRecordTypeId();
+        Schema.RecordTypeInfo recordTypeInfo = Schema.SObjectType.StnryAssetEnvrSrc
+            .getRecordTypeInfosByDeveloperName().get('Commercial_Building');
+        Id recordTypeId = recordTypeInfo != null ? recordTypeInfo.getRecordTypeId() : null;
         if (recordTypeId != null)  assetRecord.put('RecordTypeId', recordTypeId);
         insert assetRecord;
 
@@ -98,7 +100,9 @@ private class NZC_EasyAuditControllerV2Test {
                 IsCompanyOwnedAsset = true
         );
 
-        Id recordTypeId = VehicleAssetEmssnSrc.SObjectType.getDescribe().getRecordTypeInfosByDeveloperName().get('Fleet_Vehicle')?.getRecordTypeId();
+        Schema.RecordTypeInfo recordTypeInfo = Schema.SObjectType.VehicleAssetEmssnSrc
+            .getRecordTypeInfosByDeveloperName().get('Fleet_Vehicle');
+        Id recordTypeId = recordTypeInfo != null ? recordTypeInfo.getRecordTypeId() : null;
         if (recordTypeId != null) vehicleAsset.put('RecordTypeId', recordTypeId);
         insert vehicleAsset;
 
