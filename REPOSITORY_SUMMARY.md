@@ -290,7 +290,6 @@ NZC-EasyAudit/
 ├── eslint.config.js            # ESLint configuration
 ├── jest.config.js              # Jest test configuration
 ├── package.json                 # npm dependencies
-├── package.xml                  # Salesforce package manifest
 └── sfdx-project.json            # Salesforce DX project configuration
 ```
 
@@ -461,7 +460,6 @@ When working with this codebase:
 ## Version Information
 
 - **Source API Version**: 65.0
-- **Package Version**: 55.0 (in package.xml)
 - **Last Updated**: January 2026
 - **Code Quality**: Integrated with SF Code Analyzer
 - **Security**: All queries enforce user-level security with `WITH USER_MODE`
