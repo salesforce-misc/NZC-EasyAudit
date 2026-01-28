@@ -1,8 +1,8 @@
-# Admin Setup Guide: NZC EasyAudit
+# Complete Admin Setup Guide
 
-> **Post-Deployment Configuration Instructions for Salesforce Administrators**
+> **Comprehensive configuration instructions for Salesforce Administrators**
 
-This guide provides step-by-step instructions for configuring the NZC EasyAudit component after deployment to your Salesforce org. Follow these steps to ensure proper access, security, and functionality.
+This guide provides detailed step-by-step instructions for configuring the NZC EasyAudit component after deployment to your Salesforce org. Follow these steps to ensure proper access, security, and functionality.
 
 ---
 
@@ -60,7 +60,7 @@ Ensure you have test records available:
 
 The NZC EasyAudit component requires read access to multiple Net Zero Cloud objects and fields. Configure security using either **Permission Sets** (recommended) or **Profiles**.
 
-> **Quick Start:** A permission set (`NZC EasyAudit Access`) is included in the deployment package with Apex class access pre-configured. You only need to add object/field permissions and assign it to users. See [Option A](#21-option-a-use-deployed-permission-set-recommended) below.
+> **Quick Start:** A permission set (`NZC EasyAudit Access`) is included in the deployment package with Apex class access pre-configured. You only need to add object/field permissions and assign it to users.
 
 ### 2.1 Option A: Use Deployed Permission Set (Recommended)
 
@@ -68,8 +68,6 @@ The NZC EasyAudit component requires read access to multiple Net Zero Cloud obje
 
 1. **Assign Object and Field Permissions** (see Step 2 below)
 2. **Assign the Permission Set to Users** (see Step 5 below)
-
-If you prefer to create a custom permission set or need to modify the existing one, follow the manual creation steps in [Option B: Manual Permission Set Creation](#22-option-b-manual-permission-set-creation-optional).
 
 #### Step 1: Verify Permission Set Deployment
 
@@ -146,7 +144,7 @@ For each object above, configure field-level security:
 **SustainabilityUom:**
 - MasterLabel
 
-#### Step 3: Verify Apex Class Access (Already Configured)
+#### Step 4: Verify Apex Class Access (Already Configured)
 
 The deployed permission set already includes Apex class access for:
 - `NZC_EasyAuditControllerV2`
@@ -158,7 +156,7 @@ The deployed permission set already includes Apex class access for:
 2. Verify the three classes listed above are in the **Enabled Apex Classes** section
 3. If any are missing, add them manually
 
-#### Step 4: Lightning Web Component Access (Optional)
+#### Step 5: Lightning Web Component Access (Optional)
 
 **Note:** Lightning Web Components typically don't require explicit permission set access if:
 - They're exposed (`isExposed=true` in their metadata)
@@ -176,7 +174,7 @@ If you need to restrict LWC access, you can add it manually:
    - `nZC_EasyAuditLogging`
 4. Click **Save**
 
-#### Step 5: Assign Permission Set to Users
+#### Step 6: Assign Permission Set to Users
 
 1. Navigate to **Setup** → **Permission Sets**
 2. Click **NZC EasyAudit Access**
@@ -185,6 +183,21 @@ If you need to restrict LWC access, you can add it manually:
 5. Select users who need access to the component
 6. Click **Assign**
 7. Click **Done**
+
+### 2.2 Option B: Manual Permission Set Creation (Optional)
+
+If you prefer to create a custom permission set:
+
+1. Navigate to **Setup** → **Permission Sets**
+2. Click **New**
+3. Enter a label (e.g., "NZC EasyAudit Custom Access")
+4. Click **Save**
+5. Follow Steps 2-6 from Option A above
+6. Add Apex class access manually:
+   - Click **Apex Class Access**
+   - Click **Edit**
+   - Move the three Apex classes to **Enabled Apex Classes**
+   - Click **Save**
 
 ### 2.3 Option C: Update Profiles (Alternative)
 
@@ -469,8 +482,9 @@ If you encounter issues not covered here:
    - Check for deployment errors in Setup → Deploy → Deployment Status
 
 4. **Review Documentation:**
-   - Refer to [README.md](README.md) for general information
-   - Check [REPOSITORY_SUMMARY.md](REPOSITORY_SUMMARY.md) for architecture details
+   - Refer to [README.md](../README.md) for general information
+   - Check [REPOSITORY_SUMMARY.md](../REPOSITORY_SUMMARY.md) for architecture details
+   - Review [Troubleshooting Guide](admin-troubleshooting.md) for detailed solutions
 
 ---
 
@@ -624,24 +638,16 @@ Use this checklist to ensure all configuration steps are completed:
 
 ## Additional Resources
 
-### Documentation
-
-- **📖 Documentation Index:** [docs/README.md](docs/README.md)
-- **🚀 Quick Start:** [docs/admin-quick-start.md](docs/admin-quick-start.md)
-- **⚙️ Configuration:** [docs/admin-configuration.md](docs/admin-configuration.md)
-- **🐛 Troubleshooting:** [docs/admin-troubleshooting.md](docs/admin-troubleshooting.md)
-- **👥 User Guide:** [docs/user-guide.md](docs/user-guide.md)
-
-### Other Resources
-
-- **Main Documentation:** [README.md](README.md)
-- **Architecture Details:** [REPOSITORY_SUMMARY.md](REPOSITORY_SUMMARY.md)
-- **Contributing Guidelines:** [CONTRIBUTING.md](CONTRIBUTING.md)
-- **Security Policy:** [SECURITY.md](SECURITY.md)
+- **Quick Start:** [Admin Quick Start Guide](admin-quick-start.md)
+- **Configuration:** [Admin Configuration Guide](admin-configuration.md)
+- **Troubleshooting:** [Admin Troubleshooting Guide](admin-troubleshooting.md)
+- **User Guide:** [User Guide](user-guide.md)
+- **Main Documentation:** [README.md](../README.md)
+- **Architecture Details:** [REPOSITORY_SUMMARY.md](../REPOSITORY_SUMMARY.md)
+- **Contributing Guidelines:** [CONTRIBUTING.md](../CONTRIBUTING.md)
+- **Security Policy:** [SECURITY.md](../SECURITY.md)
 
 ---
-
-**Note:** This file is maintained for backward compatibility. For the most up-to-date documentation, please refer to the [docs folder](docs/).
 
 **Last Updated:** January 2026  
 **Version:** 1.0

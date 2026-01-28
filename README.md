@@ -119,15 +119,17 @@ cci flow run dev_org --org dev
 
 After deploying with any method above, complete these manual steps:
 
+> **📖 For detailed post-deployment configuration, see the [Admin Quick Start Guide](docs/admin-quick-start.md) or [Complete Admin Setup Guide](docs/admin-setup.md)**
+
 1. **Add Component to Lightning Pages**
    - Navigate to Setup → Lightning App Builder
    - Edit the Vehicle Energy Use or Stationary Energy Use Lightning page
    - Add the `NZC_EasyAuditShell` component to the page
    - Save and activate the page
 
-2. **Verify Component Access**
-   - Ensure your user profile has access to the Lightning Web Components
-   - Check that the Apex classes are accessible (they use `with sharing`)
+2. **Configure Security**
+   - Assign the `NZC EasyAudit Access` permission set to users
+   - Configure object and field permissions (see [Admin Setup Guide](docs/admin-setup.md#security-configuration))
 
 3. **Test with Sample Records**
    - Create or use existing VehicleAssetEnrgyUse or StnryAssetEnrgyUse records
@@ -138,7 +140,11 @@ After deploying with any method above, complete these manual steps:
 
 ## 🎯 Usage
 
+> **📖 For detailed usage instructions, see the [User Guide](docs/user-guide.md)**
+
 ### 📱 **Adding the Component to Lightning Pages**
+
+> **📖 Detailed instructions: [Admin Setup Guide - Lightning Page Configuration](docs/admin-setup.md#lightning-page-configuration)**
 
 1. **Navigate** to Setup → Lightning App Builder
 2. **Select** the Vehicle Energy Use or Stationary Energy Use Lightning page
@@ -148,6 +154,8 @@ After deploying with any method above, complete these manual steps:
 6. **Save** and **Activate** the page
 
 ### 🔍 **Viewing Emissions Calculations**
+
+> **📖 Complete user guide: [User Guide](docs/user-guide.md)**
 
 1. **Navigate** to a VehicleAssetEnrgyUse or StnryAssetEnrgyUse record
 2. **Locate** the EasyAudit component on the record page
@@ -258,9 +266,19 @@ When reporting bugs, please include:
 - Net Zero Cloud version (if applicable)
 - Screenshots or error messages (if applicable)
 
+## 📚 Documentation
+
+Comprehensive documentation is available in the [`docs/`](docs/) folder:
+
+- **[Admin Quick Start](docs/admin-quick-start.md)** - Get up and running in 15 minutes
+- **[Complete Admin Setup Guide](docs/admin-setup.md)** - Detailed configuration instructions
+- **[Admin Configuration Guide](docs/admin-configuration.md)** - Advanced configuration options
+- **[Admin Troubleshooting Guide](docs/admin-troubleshooting.md)** - Solutions to common issues
+- **[User Guide](docs/user-guide.md)** - End user documentation
+
 ## 🆘 Support
 
-- 📚 **Documentation**: Check our [Wiki](https://github.com/jvillalpando_sfemu/NZC-EasyAudit/wiki) for detailed guides
+- 📚 **Documentation**: Check the [docs folder](docs/) for comprehensive guides
 - 🐛 **Issues**: Report bugs via [GitHub Issues](https://github.com/jvillalpando_sfemu/NZC-EasyAudit/issues)
 - 💬 **Discussions**: Join the conversation in [GitHub Discussions](https://github.com/jvillalpando_sfemu/NZC-EasyAudit/discussions)
 - 📧 **Contact**: Reach out to the maintainers for enterprise support
