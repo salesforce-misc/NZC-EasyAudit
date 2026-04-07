@@ -18,8 +18,18 @@ export default class NZcEasyAuditStep extends LightningElement {
     recordLinkName;
 
     get title() {
-        return `${this.stepInstruction.title} 
-        ${this.stepInstruction.final? ' : ' + this.stepInstruction.final : ''}`;
+        const suffix = this.stepInstruction.final
+            ? ` : ${this.stepInstruction.final}`
+            : '';
+        return `${this.stepInstruction.title}${suffix}`;
+    }
+
+    get lineRows() {
+        const list = this.lines;
+        if (!list) {
+            return [];
+        }
+        return list.map((text, i) => ({ key: `insight-${i}`, text }));
     }
 
     connectedCallback() {

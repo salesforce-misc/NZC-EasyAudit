@@ -6,12 +6,20 @@
 <template>
     <lightning-accordion-section label={title}>
         <template if:true={recordLinkId}>
-            <a href={recordLinkId}>
-                <p>{recordLinkName}</p>
-            </a>
+            <div class="slds-m-bottom_small">
+                <lightning-formatted-url
+                    value={recordLinkId}
+                    label={recordLinkName}
+                ></lightning-formatted-url>
+            </div>
         </template>
-        <template for:each={lines} for:item='line' >
-        <p key={line} class='calculation-line'>{line}</p>
+        <template for:each={lineRows} for:item="row">
+            <lightning-tile
+                key={row.key}
+                type="standard"
+                label={row.text}
+                class="slds-m-bottom_x-small"
+            ></lightning-tile>
         </template>
     </lightning-accordion-section>
 </template>
