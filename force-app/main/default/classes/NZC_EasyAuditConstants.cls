@@ -14,7 +14,6 @@ public with sharing class NZC_EasyAuditConstants {
     public static final String SCOPE2 = 'Scope 2';
     public static final String SCOPE3 = 'Scope 3';
 
-
     public static final String FUEL_ELECTRICITY = 'Electricity';
     public static final String FUEL_CITYGAS = 'CityGas';
     public static final String FUEL_COOLING = 'Cooling';

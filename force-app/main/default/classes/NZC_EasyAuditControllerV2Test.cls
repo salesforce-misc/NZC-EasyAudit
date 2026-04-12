@@ -418,4 +418,18 @@ private class NZC_EasyAuditControllerV2Test {
         Assert.areEqual(10.0, result.SuplScope2LocationBasedEmssn,
             'Location emissions should be 10');
     }
+
+    @IsTest
+    static void testGetRecordInfo_InvalidId() {
+        // Test exception handling with invalid record ID
+        Test.startTest();
+        try {
+            NZC_EasyAuditControllerV2.getRecordInfo('invalid_id');
+            Assert.fail('Should have thrown AuraHandledException');
+        } catch (AuraHandledException e) {
+            Assert.isTrue(e.getMessage().contains('Failed to retrieve'),
+                'Exception message should contain error context');
+        }
+        Test.stopTest();
+    }
 }

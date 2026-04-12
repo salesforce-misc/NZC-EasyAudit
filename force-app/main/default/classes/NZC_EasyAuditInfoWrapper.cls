@@ -217,32 +217,8 @@ public with sharing class NZC_EasyAuditInfoWrapper {
     }
 
     public Boolean isCustomFuelOrUnit() {
-        Boolean isCustomFuel = false;
-        Boolean isCustomUnit = false;
-        try {
-            Id castUnitId = (Id) this.FuelConsumptionUnit;
-            isCustomUnit = castUnitId.getSobjectType() + '' == 'SustainabilityUom';
-        } catch (TypeException e) {
-            // FuelConsumptionUnit is a standard string value, not a custom unit ID
-            // This is expected behavior when FuelConsumptionUnit is a standard unit
-            isCustomUnit = false; // Explicitly set to false for standard units
-        } catch (StringException e) {
-            // FuelConsumptionUnit is a standard string value (e.g., "kWh"), not a valid Id
-            // This is expected behavior when FuelConsumptionUnit is a standard unit
-            isCustomUnit = false; // Explicitly set to false for standard units
-        }
-        try {
-            Id castUnitId = (Id) this.FuelType;
-            isCustomFuel = castUnitId.getSobjectType() + '' == 'FuelType';
-        } catch (TypeException e) {
-            // FuelType is a standard string value, not a custom fuel ID
-            // This is expected behavior when FuelType is a standard fuel type
-            isCustomFuel = false; // Explicitly set to false for standard fuel types
-        } catch (StringException e) {
-            // FuelType is a standard string value (e.g., "Electricity"), not a valid Id
-            // This is expected behavior when FuelType is a standard fuel type
-            isCustomFuel = false; // Explicitly set to false for standard fuel types
-        }
+        Boolean isCustomUnit = isCustomSObject(this.FuelConsumptionUnit, 'SustainabilityUom');
+        Boolean isCustomFuel = isCustomSObject(this.FuelType, 'FuelType');
         return isCustomUnit || isCustomFuel || overrideCustomFuel;
     }
 
@@ -275,5 +251,24 @@ public with sharing class NZC_EasyAuditInfoWrapper {
 
     private void populateUrl() {
         this.baseUrl = Url.getOrgDomainUrl().toExternalForm();
+    }
+
+    /**
+     * Helper method to check if a string value represents a custom SObject ID
+     * @param value String value to check (may be an ID or standard string value)
+     * @param expectedSObjectType Expected SObject type name to match
+     * @return true if value is an ID of the expected SObject type, false otherwise
+     */
+    private Boolean isCustomSObject(String value, String expectedSObjectType) {
+        try {
+            Id castId = (Id) value;
+            return castId.getSobjectType() + '' == expectedSObjectType;
+        } catch (TypeException e) {
+            // Value is a standard string, not a custom SObject ID
+            return false;
+        } catch (StringException e) {
+            // Value is a standard string (e.g., "kWh", "Electricity"), not a valid Id
+            return false;
+        }
     }
 }

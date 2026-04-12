@@ -131,10 +131,9 @@ public with sharing class NZC_EasyAuditControllerV2 {
     public static NZC_EasyAuditInfoWrapper getRecordInfo(String recordId) {
         try {
             NZC_EasyAuditControllerV2 instance = new NZC_EasyAuditControllerV2(recordId);
-            NZC_EasyAuditInfoWrapper result = instance.processWrapper();
-            return result;
+            return instance.processWrapper();
         } catch (Exception e) {
-            throw e;
+            throw new AuraHandledException('Failed to retrieve audit info: ' + e.getMessage());
         }
     }
 }
