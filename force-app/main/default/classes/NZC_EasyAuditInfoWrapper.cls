@@ -177,7 +177,7 @@ public with sharing class NZC_EasyAuditInfoWrapper {
         this.RecordTypeName = stationaryInfo.StnryAssetEnvrSrc.RecordType.Name;
         this.SuplScope1Emissions = stationaryInfo.SuplScope1Emissions;
         this.SuplScope2LocationBasedEmssn = stationaryInfo.SuplScope2LocationBasedEmssn;
-        this.SuplScope2MarketBasedEmssn = stationaryInfo.SuplScope2LocationBasedEmssn;
+        this.SuplScope2MarketBasedEmssn = stationaryInfo.SuplScope2MarketBasedEmssn;
         this.PowerUsageEffectiveness = stationaryInfo.PowerUsageEffectiveness;
         this.ElecCo2eEmissionRateUnit = stationaryInfo.ElectricityEmissionFactors.Co2eEmissionRateUnit;
         this.ElectCo2eEmissionRate = stationaryInfo.ElectricityEmissionFactors.Co2eEmissionRate;

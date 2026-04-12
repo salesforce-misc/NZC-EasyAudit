@@ -83,11 +83,11 @@ private class NZC_EasyAuditControllerV2Test {
                 FuelConsumption = 100,
                 FuelConsumptionUnit = 'Liters',
                 FuelType = 'Diesel',
-                SuplScope1Emissions = 10,
-                SuplScope2MarketBasedEmssn = 10,
-                SuplScope2LocationBasedEmssn = 10,
-                SuplScope3UpstrmEmissions = 10,
-                SuplScope3DnstrmEmissions = 10
+                SuplScope1Emissions = 15.0,
+                SuplScope2MarketBasedEmssn = 25.0,
+                SuplScope2LocationBasedEmssn = 10.0,
+                SuplScope3UpstrmEmissions = 5.0,
+                SuplScope3DnstrmEmissions = 3.0
         );
         insert useRecord;
     }
@@ -187,6 +187,20 @@ private class NZC_EasyAuditControllerV2Test {
         Assert.isNotNull(result.SuplScope1Emissions);
         Assert.isNotNull(result.SuplScope2LocationBasedEmssn);
         Assert.isNotNull(result.SuplScope2MarketBasedEmssn);
+
+        // Verify correct field mapping for market vs location based
+        Assert.areNotEqual(
+            result.SuplScope2LocationBasedEmssn,
+            result.SuplScope2MarketBasedEmssn,
+            'Market-based and Location-based emissions must be different values'
+        );
+
+        // Verify exact values match source data
+        Assert.areEqual(25.0, result.SuplScope2MarketBasedEmssn,
+            'Market-based emissions should be 25.0');
+        Assert.areEqual(10.0, result.SuplScope2LocationBasedEmssn,
+            'Location-based emissions should be 10.0');
+
         Assert.isNotNull(result.ElectCo2eEmissionRate);
         Assert.isNotNull(result.ElecCo2eEmissionRateUnit);
         Assert.isNotNull(result.ElecFactorName);
@@ -310,5 +324,98 @@ private class NZC_EasyAuditControllerV2Test {
         assertStationarySpecificFields(result);
         assertCommonFields(result);
         Assert.isNotNull(result.customFuelConversion);
+    }
+
+    // Helper method for creating test records with custom emission values
+    private static StnryAssetEnrgyUse createStationaryRecord(
+        Decimal marketEmissions,
+        Decimal locationEmissions
+    ) {
+        // Create required parent records
+        StnryAssetEnvrSrc assetRecord = new StnryAssetEnvrSrc(
+            Name = 'Test Asset ' + System.currentTimeMillis()
+        );
+
+        // Set RecordType if exists in org
+        List<RecordType> recordTypes = [
+            SELECT Id
+            FROM RecordType
+            WHERE SObjectType = 'StnryAssetEnvrSrc'
+            AND DeveloperName = 'Facility'
+            WITH USER_MODE
+            LIMIT 1
+        ];
+        if (!recordTypes.isEmpty()) {
+            assetRecord.RecordTypeId = recordTypes[0].Id;
+        }
+        insert assetRecord;
+
+        // Create stationary energy use record with custom emissions
+        StnryAssetEnrgyUse useRecord = new StnryAssetEnrgyUse(
+            Name = 'Test Record ' + System.currentTimeMillis(),
+            StartDate = Date.today().addMonths(-1),
+            EndDate = Date.today(),
+            StnryAssetEnvrSrcId = assetRecord.Id,
+            FuelConsumption = 100,
+            FuelConsumptionUnit = 'Liters',
+            FuelType = 'Diesel',
+            SuplScope1Emissions = 15.0,
+            SuplScope2MarketBasedEmssn = marketEmissions,
+            SuplScope2LocationBasedEmssn = locationEmissions,
+            SuplScope3UpstrmEmissions = 5.0,
+            SuplScope3DnstrmEmissions = 3.0
+        );
+        insert useRecord;
+
+        return useRecord;
+    }
+
+    @IsTest
+    static void testStationaryEmissions_EdgeCases() {
+        // Test Case 1: Market = 0, Location > 0
+        StnryAssetEnrgyUse testRecord1 = createStationaryRecord(0.0, 15.0);
+
+        Test.startTest();
+        NZC_EasyAuditInfoWrapper result1 =
+            NZC_EasyAuditControllerV2.getRecordInfo(testRecord1.Id);
+        Test.stopTest();
+
+        Assert.areEqual(0.0, result1.SuplScope2MarketBasedEmssn,
+            'Market emissions should be 0');
+        Assert.areEqual(15.0, result1.SuplScope2LocationBasedEmssn,
+            'Location emissions should be 15');
+
+        // Test Case 2: Market > Location (valid scenario)
+        StnryAssetEnrgyUse testRecord2 = createStationaryRecord(50.0, 30.0);
+
+        result1 = NZC_EasyAuditControllerV2.getRecordInfo(testRecord2.Id);
+        Assert.areEqual(50.0, result1.SuplScope2MarketBasedEmssn,
+            'Market emissions should be 50');
+        Assert.areEqual(30.0, result1.SuplScope2LocationBasedEmssn,
+            'Location emissions should be 30');
+
+        // Test Case 3: Both null (edge case)
+        StnryAssetEnrgyUse testRecord3 = createStationaryRecord(null, null);
+        result1 = NZC_EasyAuditControllerV2.getRecordInfo(testRecord3.Id);
+        Assert.isNull(result1.SuplScope2MarketBasedEmssn,
+            'Null market emissions should remain null');
+        Assert.isNull(result1.SuplScope2LocationBasedEmssn,
+            'Null location emissions should remain null');
+    }
+
+    @IsTest
+    static void testStationaryEmissions_NegativeValues() {
+        // Some scenarios may have negative adjustments
+        StnryAssetEnrgyUse testRecord = createStationaryRecord(-5.0, 10.0);
+
+        Test.startTest();
+        NZC_EasyAuditInfoWrapper result =
+            NZC_EasyAuditControllerV2.getRecordInfo(testRecord.Id);
+        Test.stopTest();
+
+        Assert.areEqual(-5.0, result.SuplScope2MarketBasedEmssn,
+            'Negative market emissions should be preserved');
+        Assert.areEqual(10.0, result.SuplScope2LocationBasedEmssn,
+            'Location emissions should be 10');
     }
 }
