@@ -7,6 +7,58 @@
 
 import {LightningElement, api, track} from 'lwc';
 
+/**
+ * lowerCamelCase for runs of letter-words separated by spaces (natural-language phrases).
+ */
+function wordsToCamelCase(phrase) {
+    const words = phrase.trim().split(/\s+/).filter(Boolean);
+    if (words.length === 0) {
+        return phrase;
+    }
+    const lower = words.map((w) => w.toLowerCase());
+    return lower[0] + lower.slice(1).map((w) => w.charAt(0).toUpperCase() + w.slice(1)).join('');
+}
+
+/**
+ * Finds letter-only word sequences with internal spaces and converts each to camelCase.
+ */
+function camelCaseNaturalLanguageRuns(text) {
+    if (!text) {
+        return text;
+    }
+    return text.replace(/\b([A-Za-z]+(?:\s+[A-Za-z]+)+)\b/g, (match) => wordsToCamelCase(match));
+}
+
+/**
+ * Adds grouping commas to non-negative numeric tokens (integers and decimals). Skips scientific notation.
+ */
+function formatPositiveNumbersWithCommas(text) {
+    if (!text) {
+        return text;
+    }
+    return text.replace(/\b\d+(?:\.\d+)?\b/g, (match) => {
+        if (/[eE]/.test(match)) {
+            return match;
+        }
+        const n = Number(match);
+        if (Number.isNaN(n) || n < 0) {
+            return match;
+        }
+        const parts = match.split('.');
+        const intRaw = parts[0];
+        const intFormatted = Number(intRaw).toLocaleString(undefined, { useGrouping: true });
+        return parts.length > 1 ? `${intFormatted}.${parts[1]}` : intFormatted;
+    });
+}
+
+export function formatAuditDisplayText(text) {
+    if (text == null || text === '') {
+        return text;
+    }
+    const camel = camelCaseNaturalLanguageRuns(String(text));
+    return formatPositiveNumbersWithCommas(camel);
+}
+
 export default class NZcEasyAuditStep extends LightningElement {
 
     @api
@@ -17,11 +69,14 @@ export default class NZcEasyAuditStep extends LightningElement {
     recordLinkId;
     recordLinkName;
 
-    get title() {
-        const suffix = this.stepInstruction.final
-            ? ` : ${this.stepInstruction.final}`
-            : '';
-        return `${this.stepInstruction.title}${suffix}`;
+    get displayTitle() {
+        const si = this.stepInstruction;
+        if (!si) {
+            return '';
+        }
+        const base = formatAuditDisplayText(si.title || '');
+        const finalPart = si.final ? formatAuditDisplayText(String(si.final)) : '';
+        return finalPart ? `${base} : ${finalPart}` : base;
     }
 
     get lineRows() {
@@ -29,14 +84,18 @@ export default class NZcEasyAuditStep extends LightningElement {
         if (!list) {
             return [];
         }
-        return list.map((text, i) => ({ key: `insight-${i}`, text }));
+        return list.map((text, i) => ({
+            key: `insight-${i}`,
+            text: formatAuditDisplayText(text)
+        }));
     }
 
     connectedCallback() {
         if (!this.lines) {
-            this.lines = this.stepInstruction.descriptions
+            this.lines = this.stepInstruction.descriptions;
             this.recordLinkId = this.stepInstruction.recordLinkId;
-            this.recordLinkName = this.stepInstruction.recordLinkName;
+            const rawName = this.stepInstruction.recordLinkName;
+            this.recordLinkName = rawName ? formatAuditDisplayText(String(rawName)) : undefined;
         }
     }
 }

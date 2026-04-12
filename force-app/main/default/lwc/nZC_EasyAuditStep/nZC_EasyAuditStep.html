@@ -4,7 +4,7 @@
 
 <!-- NZc Easy Audit Step -->
 <template>
-    <lightning-accordion-section label={title}>
+    <lightning-accordion-section label={displayTitle}>
         <template if:true={recordLinkId}>
             <div class="slds-m-bottom_small">
                 <lightning-formatted-url
@@ -14,12 +14,11 @@
             </div>
         </template>
         <template for:each={lineRows} for:item="row">
-            <lightning-tile
-                key={row.key}
-                type="standard"
-                label={row.text}
-                class="slds-m-bottom_x-small"
-            ></lightning-tile>
+            <article key={row.key} class="slds-tile slds-media slds-m-bottom_x-small">
+                <div class="slds-media__body slds-text-body_regular">
+                    <lightning-formatted-text value={row.text}></lightning-formatted-text>
+                </div>
+            </article>
         </template>
     </lightning-accordion-section>
 </template>
