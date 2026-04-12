@@ -1,6 +1,22 @@
 ---
 alwaysApply: false
+converted_to_skill: true
+skill_name: readme-generate
+migration_date: 2026-04-11
 ---
+
+> **⚠️ MIGRATION NOTICE**
+> This rule has been converted to an interactive skill for better usability.
+>
+> **Use `/readme-generate` skill instead** for:
+> - Interactive README generation
+> - Step-by-step guidance
+> - Validation and compliance checks
+>
+> This file is kept as reference documentation for the underlying template structure.
+
+---
+
 # Accelerator README Template & Standards
 
 ## Purpose
@@ -8,6 +24,7 @@ alwaysApply: false
 This template provides a comprehensive structure for creating professional, OSPO-compliant README.md files for Salesforce Accelerators. Use this template to ensure consistency, accessibility, and completeness across all accelerator documentation.
 
 **Trigger:** Apply these rules when generating, editing, or reviewing the README.md file.
+**⚠️ Recommended:** Use `/readme-generate` skill for interactive workflow.
 
 ---
 

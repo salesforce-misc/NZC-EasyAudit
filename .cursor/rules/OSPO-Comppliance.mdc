@@ -2,11 +2,29 @@
 description: Enforces Salesforce OSPO legal and compliance requirements for open-source accelerators. Based on https://github.com/salesforce/oss-template
 globs: *
 alwaysApply: false
+converted_to_skill: true
+skill_name: prepare-opensource
+migration_date: 2026-04-11
+---
+
+> **⚠️ MIGRATION NOTICE**
+> This rule has been converted to an interactive skill for better usability.
+>
+> **Use `/prepare-opensource` skill instead** for:
+> - Interactive OSPO compliance validation
+> - Automated file generation
+> - Internal reference scanning
+> - Copyright header addition
+> - Compliance checklist
+>
+> This file is kept as reference documentation for the underlying compliance requirements.
+
 ---
 
 # OSPO Compliance & Legal Scrubbing Rules
 
 **Trigger:** Apply these rules when the user asks to "prepare repo for open source", "check compliance", or "publish accelerator".
+**⚠️ Recommended:** Use `/prepare-opensource` skill for interactive workflow.
 
 **CRITICAL:** All required files MUST be placed at the top level of the repository root directory. This is a mandatory requirement from the Salesforce OSS template.
 

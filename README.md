@@ -246,6 +246,26 @@ We welcome contributions to improve the NZC EasyAudit! Please follow these steps
 - Test thoroughly in multiple org types
 - Ensure calculations match Net Zero Cloud emission factor standards
 
+### 🤖 **AI Coding Assistant Support**
+
+This repository is optimized for AI-powered development with both **Cursor IDE** and **Claude Code**:
+
+- **Cursor IDE**: Uses rules in [`.cursor/rules/`](./.cursor/rules/) for automated coding standards
+- **Claude Code**: Follows [CLAUDE.md](./CLAUDE.md) which references the same shared rules
+- **Shared Standards**: Both tools use the same [REPOSITORY_SUMMARY.md](./REPOSITORY_SUMMARY.md) for project context
+
+**Key Resources for AI Assistants**:
+- [CLAUDE.md](./CLAUDE.md) - Main instructions for Claude Code
+- [REPOSITORY_SUMMARY.md](./REPOSITORY_SUMMARY.md) - Complete project overview and architecture
+- [.cursor/rules/](./.cursor/rules/) - Comprehensive coding standards (LWC, Apex, testing, documentation)
+- [SKILLS.md](./SKILLS.md) - Interactive skills for complex workflows
+
+**Available Skills**:
+- `/readme-generate` - Generate OSPO-compliant README files
+- `/prepare-opensource` - Validate compliance and prepare for publication
+
+Skills provide interactive workflows for common tasks. See [SKILLS.md](./SKILLS.md) for complete documentation.
+
 ---
 
 ## 📄 License
