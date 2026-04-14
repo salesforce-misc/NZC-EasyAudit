@@ -40,8 +40,5 @@
     "**/lwc/**": [
       "sfdx-lwc-jest -- --bail --findRelatedTests --passWithNoTests"
     ]
-  },
-  "dependencies": {
-    "@salesforce/mcp": "^0.30.5"
   }
 }
