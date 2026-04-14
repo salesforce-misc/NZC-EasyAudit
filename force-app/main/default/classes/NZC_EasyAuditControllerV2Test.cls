@@ -331,9 +331,13 @@ private class NZC_EasyAuditControllerV2Test {
         Decimal marketEmissions,
         Decimal locationEmissions
     ) {
+        // Create required emission factor set
+        String otherSetId = createOtherEmissionsSet();
+
         // Create required parent records
         StnryAssetEnvrSrc assetRecord = new StnryAssetEnvrSrc(
-            Name = 'Test Asset ' + System.currentTimeMillis()
+            Name = 'Test Asset ' + System.currentTimeMillis(),
+            OtherEmssnFctrId = otherSetId
         );
 
         // Set RecordType if exists in org
@@ -417,5 +421,20 @@ private class NZC_EasyAuditControllerV2Test {
             'Negative market emissions should be preserved');
         Assert.areEqual(10.0, result.SuplScope2LocationBasedEmssn,
             'Location emissions should be 10');
+    }
+
+    @IsTest
+    static void testGetRecordInfo_InvalidId() {
+        // Test exception handling with invalid record ID
+        Test.startTest();
+        try {
+            NZC_EasyAuditControllerV2.getRecordInfo('invalid_id');
+            Assert.fail('Should have thrown AuraHandledException');
+        } catch (AuraHandledException e) {
+            // Verify exception was properly caught and wrapped
+            Assert.isNotNull(e.getMessage(),
+                'Exception message should be populated');
+        }
+        Test.stopTest();
     }
 }
