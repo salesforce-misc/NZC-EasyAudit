@@ -97,6 +97,12 @@ public with sharing class NZC_EasyAuditInfoWrapper {
     public String ElecFactorId {get;set;}
     @AuraEnabled
     public String ElecFactorName {get;set;}
+    @AuraEnabled
+    public String EmissionsFactorType {get;set;}
+    @AuraEnabled
+    public Decimal MktBsdElecCo2eEmissionRate {get;set;}
+    @AuraEnabled
+    public String MktBsdElecCo2eEmissionRateUnit {get;set;}
 
     @AuraEnabled
     public Decimal OccupiedFloorArea {get;set;}
@@ -181,6 +187,9 @@ public with sharing class NZC_EasyAuditInfoWrapper {
         this.PowerUsageEffectiveness = stationaryInfo.PowerUsageEffectiveness;
         this.ElecCo2eEmissionRateUnit = stationaryInfo.ElectricityEmissionFactors.Co2eEmissionRateUnit;
         this.ElectCo2eEmissionRate = stationaryInfo.ElectricityEmissionFactors.Co2eEmissionRate;
+        this.EmissionsFactorType = stationaryInfo.ElectricityEmissionFactors.EmissionsFactorType;
+        this.MktBsdElecCo2eEmissionRate = stationaryInfo.ElectricityEmissionFactors.MktBsdCo2eEmissionRate;
+        this.MktBsdElecCo2eEmissionRateUnit = stationaryInfo.ElectricityEmissionFactors.MktBsdCo2eEmissionRateUnit;
         this.ElecFactorId = stationaryInfo.ElectricityEmissionFactorsId;
         this.OccupiedFloorArea = stationaryInfo.OccupiedFloorArea;
         this.OccupiedFloorAreaUnit = stationaryInfo.OccupiedFloorAreaUnit;
