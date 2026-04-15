@@ -67,7 +67,8 @@ public with sharing class NZC_EasyAuditControllerV2 {
                 SELECT Id, FuelType, FuelConsumption, FuelConsumptionUnit,
                         SuplScope1Emissions, SuplScope2LocationBasedEmssn, SuplScope2MarketBasedEmssn,
                         PowerUsageEffectiveness, OccupiedFloorArea, OccupiedFloorAreaUnit, StnryAssetEnvrSrc.RecordType.Name,
-                        ElectricityEmissionFactors.Co2eEmissionRate, ElectricityEmissionFactors.Co2eEmissionRateUnit, ElectricityEmissionFactorsId,
+                        ElectricityEmissionFactors.EmissionsFactorType, ElectricityEmissionFactors.Co2eEmissionRate, ElectricityEmissionFactors.Co2eEmissionRateUnit,
+                        ElectricityEmissionFactors.MktBsdCo2eEmissionRate, ElectricityEmissionFactors.MktBsdCo2eEmissionRateUnit, ElectricityEmissionFactorsId,
                         RefrigerantEmssnFctr.GlblWarmingPotInKgCo2eKg, RefrigerantEmssnFctrId ,OtherEmssnFctrId, StnryAssetEnvrSrc.IsCompanyOwnedAsset,
                         AllocatedRenewableEnergyInKwh, OtherEmssnFctr.Name, ElectricityEmissionFactors.Name, RefrigerantEmssnFctr.Name
                 FROM StnryAssetEnrgyUse

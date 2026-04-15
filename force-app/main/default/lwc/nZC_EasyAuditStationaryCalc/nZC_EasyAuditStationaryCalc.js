@@ -55,8 +55,11 @@ export default class NZC_EasyAuditStationaryCalc {
 
         // elec set Id
         this.elecSetId = infoObject['ElecFactorId'];
-        this.elecCO2EemissionsFactor = infoObject['ElectCo2eEmissionRate'] || 0; //req
+        this.emissionsFactorType = infoObject['EmissionsFactorType']; // Factor type discriminator
+        this.elecCO2EemissionsFactor = infoObject['ElectCo2eEmissionRate'] || 0; //req - location-based rate
         this.elecCO2EemissionsFactorUnit = infoObject['ElecCo2eEmissionRateUnit']; //req
+        this.mktBsdElecCO2EemissionsFactor = infoObject['MktBsdElecCo2eEmissionRate'] || 0; // market-based rate
+        this.mktBsdElecCO2EemissionsFactorUnit = infoObject['MktBsdElecCo2eEmissionRateUnit'];
         this.ELECTRICITYSET = infoObject['ElecFactorName'] || ELECTRICITYSET;
 
         // refridge set
@@ -202,8 +205,25 @@ export default class NZC_EasyAuditStationaryCalc {
 
         if (this.fuelType === this.FUEL_TYPE_ELECTRICITY) {
             this.log.addRecordLink(this.ELECTRICITYSET, this.elecSetId);
-            this.log.addLine(`scope2LocationBasedEmissions = totalFuelConsumptionKwh * elecCO2EemissionsFactor / 1000 + scope2SupplementalEmissions_location`)
-            let factorUsed = this.unitConversion.convertValue(this.elecCO2EemissionsFactor, this.elecCO2EemissionsFactorUnit, 'TONNES_PER_MWH')
+
+            // Determine which emission factor to use based on EmissionsFactorType
+            let emissionRate = 0;
+            let emissionRateUnit = this.elecCO2EemissionsFactorUnit;
+
+            if (this.emissionsFactorType === 'MarketBased') {
+                // Market-based factor assigned - no location-based rate available
+                this.log.addLine(`Emissions factor type is MarketBased - location-based rate = 0`);
+                emissionRate = 0;
+            } else {
+                // LocationBased or null - use location-based rate
+                if (this.emissionsFactorType === 'LocationBased') {
+                    this.log.addLine(`Emissions factor type is LocationBased - using Co2eEmissionRate`);
+                }
+                emissionRate = this.elecCO2EemissionsFactor;
+            }
+
+            this.log.addLine(`scope2LocationBasedEmissions = totalFuelConsumptionKwh * emissionRate / 1000 + scope2SupplementalEmissions_location`)
+            let factorUsed = this.unitConversion.convertValue(emissionRate, emissionRateUnit, 'TONNES_PER_MWH')
             this.log.addLine(`scope2LocationBasedEmissions = ${this.totalFuelConsumptionKwh} * ${factorUsed} / 1000 + ${this.scope2SupplementalEmissions_location}`)
             this.scope2LocationBasedEmissions = this.totalFuelConsumptionKwh * factorUsed / 1000 + this.scope2SupplementalEmissions_location
         } else if (this.fuelType === this.FUEL_TYPE_REFRIGERANT) {
@@ -239,8 +259,27 @@ export default class NZC_EasyAuditStationaryCalc {
 
         if (this.fuelType === this.FUEL_TYPE_ELECTRICITY) {
             this.log.addRecordLink(this.ELECTRICITYSET, this.elecSetId);
-            this.log.addLine(`scope2MarketBasedEmissions = totalFuelConsumptionKwh - allocatedRenewableEnergyKwh * elecCO2EemissionsFactor / 1000 + scope2SupplementalEmissions_market`)
-            let factorUsed = this.unitConversion.convertValue(this.elecCO2EemissionsFactor, this.elecCO2EemissionsFactorUnit, 'TONNES_PER_MWH');
+
+            // Determine which emission factor to use based on EmissionsFactorType
+            let emissionRate = 0;
+            let emissionRateUnit = this.mktBsdElecCO2EemissionsFactorUnit || this.elecCO2EemissionsFactorUnit;
+
+            if (this.emissionsFactorType === 'LocationBased') {
+                // Location-based factor assigned - no market-based rate available
+                this.log.addLine(`Emissions factor type is LocationBased - market-based rate = 0`);
+                emissionRate = 0;
+            } else if (this.emissionsFactorType === 'MarketBased') {
+                // Market-based factor assigned - use market-based rate
+                this.log.addLine(`Emissions factor type is MarketBased - using MktBsdCo2eEmissionRate`);
+                emissionRate = this.mktBsdElecCO2EemissionsFactor;
+            } else {
+                // No factor type specified - use location-based rate (backward compatibility)
+                this.log.addLine(`Emissions factor type not specified - using Co2eEmissionRate for market calculation`);
+                emissionRate = this.elecCO2EemissionsFactor;
+            }
+
+            this.log.addLine(`scope2MarketBasedEmissions = (totalFuelConsumptionKwh - allocatedRenewableEnergyKwh) * emissionRate / 1000 + scope2SupplementalEmissions_market`)
+            let factorUsed = this.unitConversion.convertValue(emissionRate, emissionRateUnit, 'TONNES_PER_MWH');
             this.log.addLine(`scope2MarketBasedEmissions = (${this.totalFuelConsumptionKwh} - ${this.allocatedRenewableEnergyInKwh}) * ${factorUsed} / 1000 + ${this.scope2SupplementalEmissions_market}`)
             this.scope2MarketBasedEmissions = (this.totalFuelConsumptionKwh - this.allocatedRenewableEnergyInKwh) * factorUsed / 1000 + this.scope2SupplementalEmissions_market
         } else if (this.fuelType === this.FUEL_TYPE_REFRIGERANT) {
