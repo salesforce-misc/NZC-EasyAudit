@@ -1,7 +1,7 @@
 ---
 description: Enforces Salesforce OSPO legal and compliance requirements for open-source accelerators. Based on https://github.com/salesforce/oss-template
 globs: *
-alwaysApply: false
+alwaysApply: true
 converted_to_skill: true
 skill_name: prepare-opensource
 migration_date: 2026-04-11
@@ -34,9 +34,9 @@ migration_date: 2026-04-11
 
 Before approving any code for publication, scan and flag/remove the following:
 
-**Internal Domains:** References to `*.sfdc.sh`, `*.salesforce.com` (internal wiki links), or internal Git hosts (`git.soma.salesforce.com`).
+**Non-Public Domains:** References to private/corporate domains, private wiki links, or private Git hosts.
 
-**Internal Tools:** References to internal CI/CD systems (e.g., "GUS", "Grand Slam", internal Jenkins).
+**Private Tools:** References to non-public CI/CD systems or private work-tracking tools.
 
 **Internal Comments:** Comments mentioning "TO DO (Internal)", employee names, or internal team codes.
 
@@ -215,14 +215,14 @@ Before approving for publication, verify:
 
 **MANDATORY:** Remind the user before final approval:
 
-> "Have you obtained VP Approval, Legal Approval, and OSPO Approval via the OSS Request Portal (https://oss-request2.sfdc.sh/)?"
+> "Have you obtained VP Approval, Legal Approval, and OSPO Approval via your company's OSS request process?"
 
 ---
 
 ## 8. Reference Links
 
 - **OSS Template Repository:** https://github.com/salesforce/oss-template
-- **OSS Request Portal:** https://oss-request2.sfdc.sh/
+- **OSS Request Portal:** Use your company's internal OSS request portal URL
 - **Apache 2.0 License:** https://www.apache.org/licenses/LICENSE-2.0
 - **Salesforce CLA:** https://cla.salesforce.com/sign-cla
 
@@ -240,3 +240,35 @@ When applying these rules:
 6. **Final approval check** - Remind about OSPO approval process
 
 **Non-negotiable:** Files MUST be at root level. This is a hard requirement from the Salesforce OSS template.
+
+---
+
+## 10. Practical Learnings (Session Checklist)
+
+Use this as a quick closeout checklist before open-source publication:
+
+1. **Remove generated dependency artifacts unless explicitly needed**
+   - If generated reports are temporary (for legal review only), do not keep them tracked by default.
+   - Keep generated reports under `docs/` only when intentionally part of release documentation.
+
+2. **Sanitize publish-facing docs for non-public references**
+   - Replace private org emails, private hostnames, and private tool names with neutral wording.
+   - This includes status docs, investigation summaries, and internal runbooks that may have been committed.
+
+3. **Run SPDX header audit on tracked source/config scope**
+   - Ensure `.cls`, `.trigger`, `.js`, `.css`, `.html`, `.cmp` files carry Apache-2.0 SPDX headers.
+   - Exclude vendored third-party directories when policy allows (for example `fflib-apex-common`).
+
+4. **Re-check CONTRIBUTING content requirements**
+   - Confirm CLA instructions are present.
+   - Confirm License section is present and points to Apache 2.0.
+   - Confirm Code of Conduct reference is present.
+
+5. **Always finish with a strict verification pass**
+   - Internal references scan (private domains/tools/comments)
+   - Required root files check
+   - Header completeness check
+   - Working-tree status check
+
+6. **Pre-approval reminder is mandatory**
+   - Ask whether VP, Legal, and OSPO approvals are complete via the company's OSS process before final publication.

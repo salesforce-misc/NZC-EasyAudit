@@ -80,7 +80,7 @@ Skills are available in Cursor through the same invocation methods.
 1. Checks for required files at root level (LICENSE, CONTRIBUTING, CODE_OF_CONDUCT, SECURITY)
 2. Generates missing files from Salesforce OSS templates
 3. Validates existing file content
-4. Scans for internal Salesforce references (*.sfdc.sh, internal tools)
+4. Scans for non-public references (private domains, private tools)
 5. Adds copyright headers to source files (.cls, .js, .html, .css)
 6. Creates detailed compliance checklist
 7. Guides through approval process

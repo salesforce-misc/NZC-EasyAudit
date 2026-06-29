@@ -70,7 +70,7 @@ Validate OSPO compliance and prepare repository for public open source release.
 **What it does**:
 - Checks for required compliance files at root level
 - Generates missing files from Salesforce OSS templates
-- Scans for internal references (*.sfdc.sh, internal tools)
+- Scans for non-public references (private domains, private tools)
 - Adds copyright headers to all source files (.cls, .js, .html, .css)
 - Creates compliance checklist
 - Guides through approval process

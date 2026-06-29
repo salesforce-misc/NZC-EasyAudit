@@ -100,11 +100,22 @@ If you have questions about contributing, please:
 - Review existing [Issues](https://github.com/jvillalpando_sfemu/NZC-EasyAudit/issues)
 - Check the [README.md](README.md) for project documentation
 
+## Contributor License Agreement (CLA)
+
+All external contributors must sign the Salesforce Contributor License Agreement (CLA) before a pull request can be merged.
+
+- Sign the CLA at [https://cla.salesforce.com/sign-cla](https://cla.salesforce.com/sign-cla)
+- If you have already signed, you do not need to sign again for future contributions
+
 ## Code of Conduct
 
 - Be respectful and inclusive
 - Welcome newcomers and help them get started
 - Focus on constructive feedback
 - Respect different viewpoints and experiences
+
+## License
+
+By contributing, you agree that your contributions will be licensed under the Apache License 2.0. See the [LICENSE](LICENSE) file for details.
 
 Thank you for contributing to NZC EasyAudit! 🎉

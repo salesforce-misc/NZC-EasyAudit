@@ -2,7 +2,7 @@
 
 **Date**: April 15, 2026  
 **Test Record**: 7LKWt000000FGYqOAO (Cirrus Tower - Jul 2024 - Electricity)  
-**Deployment Target**: AF6 org (carlos.villalpando@salesforce.com.gso.nzc.af.6)
+**Deployment Target**: AF6 org (target org user)
 
 ---
 
@@ -78,11 +78,11 @@ Added logic to use the correct emission factor based on `EmissionsFactorType` di
 ## Deployment History
 
 ### Incorrect Deployment (Corrected)
-- Initially deployed to GUS org (gus@nzc.preview) ❌
+- Initially deployed to a non-target org ❌
 - Test record 7LKWt000000FGYqOAO is in AF6 org
 
 ### Correct Deployment ✅
-- **Target Org**: AF6 (carlos.villalpando@salesforce.com.gso.nzc.af.6)
+- **Target Org**: AF6 (target org user)
 - **Apex Classes**: Deploy ID 0AfWt00000aIj3aKAC (Succeeded)
 - **LWC Component**: Deploy ID 0AfWt00000aIuobKAC (Succeeded)
 - **Verification**: Manual UI testing confirmed success

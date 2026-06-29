@@ -50,3 +50,4 @@ $RECYCLE.BIN/
 
 # SF Code Analyzer results
 code-analyzer-results.*
+pmd-full-results.html

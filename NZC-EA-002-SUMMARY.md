@@ -118,7 +118,7 @@ if (EmissionsFactorType === 'LocationBased') {
 - Location-Based: 368.59 tCO2e ✅ (matches Salesforce standard UI)
 
 **Deployment**:
-- Target Org: AF6 (carlos.villalpando@salesforce.com.gso.nzc.af.6)
+- Target Org: AF6 (target org user)
 - Apex Deploy ID: 0AfWt00000aIj3aKAC
 - LWC Deploy ID: 0AfWt00000aIuobKAC
 
@@ -205,7 +205,7 @@ if (this.emissionsFactorType === 'LocationBased') {
 
 ### Manual Testing
 - **Test Record**: 7LKWt000000FGYqOAO
-- **Org**: AF6 (carlos.villalpando@salesforce.com.gso.nzc.af.6)
+- **Org**: AF6 (target org user)
 - **Result**: ✅ Values match Salesforce standard UI
 
 ### Edge Cases Tested
@@ -231,7 +231,7 @@ if (this.emissionsFactorType === 'LocationBased') {
 ## Deployment Notes
 
 ### Initial Deployment Error
-❌ Accidentally deployed to **GUS org** (gus@nzc.preview) instead of **AF6 org**  
+❌ Accidentally deployed to a non-target org instead of **AF6 org**  
 ✅ Corrected by redeploying to AF6 org where test record exists
 
 ### Platform Cache Issue
