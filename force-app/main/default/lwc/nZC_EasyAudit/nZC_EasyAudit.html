@@ -7,13 +7,20 @@
 
 <!-- NZC_EasyAudit -->
 <template>
-    <lightning-card>
-        <template if:true={showV2}>
-            <lightning-accordion allow-multiple-sections-open>
-            <template for:each={instructions} for:item="instruction" for:index='i'>
-                <c-n-z-c_-easy-audit-step key={instruction.title} step-instruction={instruction}></c-n-z-c_-easy-audit-step>
-            </template>
-            </lightning-accordion>
+  <lightning-card>
+    <template if:true={showV2}>
+      <lightning-accordion allow-multiple-sections-open>
+        <template for:each={instructions} for:item="instruction" for:index="i">
+          <c-n-z-c_-easy-audit-step
+            key={instruction.title}
+            step-instruction={instruction}
+          ></c-n-z-c_-easy-audit-step>
         </template>
-    </lightning-card>
+      </lightning-accordion>
+      <c-n-z-c_-easy-audit-insights
+        instructions={instructions}
+        record-id={recordId}
+      ></c-n-z-c_-easy-audit-insights>
+    </template>
+  </lightning-card>
 </template>
