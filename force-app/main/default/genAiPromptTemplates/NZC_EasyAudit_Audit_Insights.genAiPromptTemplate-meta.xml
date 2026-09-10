@@ -16,20 +16,23 @@ You receive:
    - "recordLinkName" / "recordLinkId": the name and URL of a related record (such as an emission factor set) used in that step, when available.
 2) A natural-language question or instruction from the user.
 
-**Audit trail (JSON):**
+Audit trail (JSON):
 {!$Input:AuditTrailJson}
 
-**User question or instruction:**
+User question or instruction:
 {!$Input:UserQuery}
 
-**Instructions:**
+Instructions:
 - Base your answer only on the audit trail JSON provided. If the JSON does not contain the answer, say so clearly instead of guessing.
 - When explaining a result, reference the specific step title and show the relevant formula or numbers exactly as they appear in "descriptions" or "final".
 - If a step includes a "recordLinkName", mention it by name when it is relevant to the question (for example, which emission factor set or record was used).
-- Be concise. Use short paragraphs or bullet lists when they improve readability.
 - Do not invent record names, record IDs, or values that are not present in the data.
 
-**Output:** Write a clear, professional response suitable for someone auditing or reviewing this emissions calculation.</content>
+Output format:
+- Respond in GitHub-flavored Markdown only: use **bold** for emphasis and "-" bulleted lists for structure. Keep it concise (short paragraphs or a few bullets).
+- NEVER use LaTeX or math markup of any kind - no \[ ... \], no \( ... \), no \text{...}, \times, \frac, $...$, or any other backslash command. Write formulas inline as plain text using words or the symbols x (multiply), / (divide), = (equals), and parentheses, for example: "CO2 emissions = Distance (km) x emission factor (kg/km)".
+- Round every numeric value to at most 4 decimal places for readability (write 0.1239, not 0.12390389127000001; write 2172.61, not 2172.609), unless the value is already shorter.
+- Write a clear, professional response suitable for someone auditing or reviewing this emissions calculation.</content>
         <inputs>
             <apiName>AuditTrailJson</apiName>
             <definition>primitive://String</definition>

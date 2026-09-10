@@ -82,9 +82,21 @@
 }
 
 .response-text {
-  white-space: pre-wrap;
   word-break: break-word;
   font-size: 0.875rem;
   line-height: 1.5;
   color: var(--slds-g-color-neutral-base-10, #080707);
+}
+
+.response-text p {
+  margin: 0 0 0.5rem;
+}
+
+.response-text p:last-child {
+  margin-bottom: 0;
+}
+
+.response-text ul {
+  margin: 0.25rem 0;
+  padding-left: 1.25rem;
 }

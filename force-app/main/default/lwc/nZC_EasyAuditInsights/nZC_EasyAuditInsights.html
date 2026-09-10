@@ -66,7 +66,10 @@
               >
                 Summary
               </p>
-              <div class="response-text">{summaryText}</div>
+              <lightning-formatted-rich-text
+                class="response-text"
+                value={summaryHtml}
+              ></lightning-formatted-rich-text>
             </div>
           </template>
 
@@ -126,7 +129,10 @@
               >
                 Response
               </p>
-              <div class="response-text">{aiResponse}</div>
+              <lightning-formatted-rich-text
+                class="response-text"
+                value={responseHtml}
+              ></lightning-formatted-rich-text>
             </div>
           </template>
         </div>

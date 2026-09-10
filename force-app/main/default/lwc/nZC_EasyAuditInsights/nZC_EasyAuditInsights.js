@@ -28,6 +28,96 @@ const SUGGESTION_PROMPTS = [
   { id: "formula", text: "Walk me through the formula for the final step." }
 ];
 
+/*
+ * The LLM is instructed (see NZC_EasyAudit_Audit_Insights prompt template) to avoid LaTeX,
+ * to use plain Markdown, and to round long decimals - but model output can't be trusted to
+ * always comply. These pure, exported helpers are a client-side safety net that repairs
+ * residual LaTeX/markdown/precision issues before the text is handed to
+ * lightning-formatted-rich-text.
+ */
+
+/** Strips LaTeX math markup (\[ \], \( \), $...$, \text{}, \times, etc.) down to plain text. */
+export function stripLatex(text) {
+  return String(text)
+    .replace(/\\\[|\\\]|\\\(|\\\)|\$\$?/g, "")
+    .replace(/\\(?:text|mathrm|mathbf|operatorname)\{([^}]*)\}/g, "$1")
+    .replace(/\\frac\{([^}]*)\}\{([^}]*)\}/g, "($1) / ($2)")
+    .replace(/\\times/g, "×")
+    .replace(/\\div/g, "÷")
+    .replace(/\\cdot/g, "·")
+    .replace(/\\le/g, "≤")
+    .replace(/\\ge/g, "≥")
+    .replace(/\\[,;!]/g, " ")
+    .replace(/\\[A-Za-z]+/g, "")
+    .replace(/[ \t]+/g, " ")
+    .replace(/ +\n/g, "\n")
+    .trim();
+}
+
+/** Rounds numbers with more than 4 fractional digits to 4 places, trimming trailing zeros. */
+export function roundLongDecimals(text) {
+  return String(text).replace(/-?\d+\.\d{5,}/g, (match) => {
+    const rounded = Number(match)
+      .toFixed(4)
+      .replace(/\.?0+$/, "");
+    return rounded;
+  });
+}
+
+/** Escapes the handful of characters that would otherwise be interpreted as HTML. */
+function escapeHtml(text) {
+  return String(text)
+    .replace(/&/g, "&amp;")
+    .replace(/</g, "&lt;")
+    .replace(/>/g, "&gt;");
+}
+
+/**
+ * Converts a safe subset of Markdown (bold, italic, "-"/"*" bullet lists, paragraphs) to HTML
+ * restricted to the lightning-formatted-rich-text allowlist (p, br, strong, em, ul, li, ...).
+ * Input is HTML-escaped first, so any literal markup in the model's text is neutralized rather
+ * than rendered.
+ */
+export function markdownToSafeHtml(text) {
+  const escaped = escapeHtml(text).replace(/\r\n/g, "\n");
+  const blocks = escaped.split(/\n{2,}/);
+
+  const htmlBlocks = blocks.map((block) => {
+    const lines = block.split("\n").filter((line) => line.trim().length > 0);
+    const isList =
+      lines.length > 0 && lines.every((line) => /^[-*]\s+/.test(line.trim()));
+
+    if (isList) {
+      const items = lines
+        .map(
+          (line) =>
+            `<li>${inlineMarkdownToHtml(line.trim().replace(/^[-*]\s+/, ""))}</li>`
+        )
+        .join("");
+      return `<ul>${items}</ul>`;
+    }
+
+    return `<p>${inlineMarkdownToHtml(lines.join("<br>"))}</p>`;
+  });
+
+  return htmlBlocks.filter((html) => html.length > 0).join("");
+}
+
+/** Applies inline (non-block) Markdown: bold ("**x**" / "__x__") and italic ("*x*" / "_x_"). */
+function inlineMarkdownToHtml(text) {
+  return text
+    .replace(
+      /\*\*([^*]+)\*\*|__([^_]+)__/g,
+      (match, a, b) => `<strong>${a || b}</strong>`
+    )
+    .replace(/\*([^*]+)\*|_([^_]+)_/g, (match, a, b) => `<em>${a || b}</em>`);
+}
+
+/** Full pipeline: repair LaTeX, round long floats, then convert Markdown to safe rich-text HTML. */
+export function formatLlmResponse(text) {
+  return markdownToSafeHtml(roundLongDecimals(stripLatex(text || "")));
+}
+
 export default class NZCEasyAuditInsights extends LightningElement {
   @api recordId;
 
@@ -72,6 +162,15 @@ export default class NZCEasyAuditInsights extends LightningElement {
 
   get auditTrailJson() {
     return this.hasInstructions ? JSON.stringify(this._instructions) : "";
+  }
+
+  /** Repaired/rich-text-safe versions of the raw model output, for display. */
+  get summaryHtml() {
+    return formatLlmResponse(this.summaryText);
+  }
+
+  get responseHtml() {
+    return formatLlmResponse(this.aiResponse);
   }
 
   get suggestedPrompts() {

@@ -6,7 +6,12 @@
  */
 
 import { createElement } from "lwc";
-import NZCEasyAuditInsights from "c/nZC_EasyAuditInsights";
+import NZCEasyAuditInsights, {
+  stripLatex,
+  roundLongDecimals,
+  markdownToSafeHtml,
+  formatLlmResponse
+} from "c/nZC_EasyAuditInsights";
 import getAuditSummary from "@salesforce/apex/NZC_EasyAuditAiController.getAuditSummary";
 import askAuditQuestion from "@salesforce/apex/NZC_EasyAuditAiController.askAuditQuestion";
 
@@ -73,8 +78,8 @@ describe("c-n-z-c-easy-audit-insights", () => {
     const summaryText = element.shadowRoot.querySelector(
       ".summary-box .response-text"
     );
-    expect(summaryText.textContent).toBe(
-      "Fuel consumption drove the final result."
+    expect(summaryText.value).toBe(
+      "<p>Fuel consumption drove the final result.</p>"
     );
 
     // Re-setting the same instructions should not trigger a second summary call.
@@ -139,8 +144,8 @@ describe("c-n-z-c-easy-audit-insights", () => {
     const responseText = element.shadowRoot.querySelector(
       ".response-box .response-text"
     );
-    expect(responseText.textContent).toBe(
-      "The electricity emission factor set was used."
+    expect(responseText.value).toBe(
+      "<p>The electricity emission factor set was used.</p>"
     );
   });
 
@@ -176,6 +181,71 @@ describe("c-n-z-c-easy-audit-insights", () => {
     expect(toastHandler).toHaveBeenCalledTimes(1);
     expect(toastHandler.mock.calls[0][0].detail.message).toBe(
       "Prompt invocation failed: boom"
+    );
+  });
+});
+
+describe("stripLatex", () => {
+  it("removes LaTeX delimiters and math commands, keeping readable symbols", () => {
+    expect(
+      stripLatex(
+        "\\[ \\text{CO2 emissions} = \\text{Distance} \\times \\text{factor} \\]"
+      )
+    ).toBe("CO2 emissions = Distance × factor");
+  });
+
+  it("leaves plain text untouched", () => {
+    expect(stripLatex("Total fuel consumption Kwh = 1000")).toBe(
+      "Total fuel consumption Kwh = 1000"
+    );
+  });
+});
+
+describe("roundLongDecimals", () => {
+  it("rounds numbers with more than 4 fractional digits to 4 places", () => {
+    expect(roundLongDecimals("Result is 0.12390389127000001 tCO2E")).toBe(
+      "Result is 0.1239 tCO2E"
+    );
+    expect(roundLongDecimals("converted value of 2172.609123")).toBe(
+      "converted value of 2172.6091"
+    );
+  });
+
+  it("leaves integers and short decimals untouched", () => {
+    expect(roundLongDecimals("n = 1000, delta = -99.5")).toBe(
+      "n = 1000, delta = -99.5"
+    );
+  });
+});
+
+describe("markdownToSafeHtml", () => {
+  it("converts bold/italic markdown to safe tags", () => {
+    expect(markdownToSafeHtml("**bold** and *italic*")).toBe(
+      "<p><strong>bold</strong> and <em>italic</em></p>"
+    );
+  });
+
+  it("groups consecutive bullet lines into a ul/li list", () => {
+    expect(markdownToSafeHtml("- alpha\n- beta")).toBe(
+      "<ul><li>alpha</li><li>beta</li></ul>"
+    );
+  });
+
+  it("HTML-escapes literal markup instead of emitting it", () => {
+    expect(markdownToSafeHtml("<script>alert(1)</script>")).toBe(
+      "<p>&lt;script&gt;alert(1)&lt;/script&gt;</p>"
+    );
+  });
+});
+
+describe("formatLlmResponse", () => {
+  it("strips LaTeX, rounds numbers, and renders markdown in one pass", () => {
+    expect(
+      formatLlmResponse(
+        "Result: \\( 0.12390389127000001 \\) tCO2E.\n\n- driven by **Co2 Emissions**"
+      )
+    ).toBe(
+      "<p>Result: 0.1239 tCO2E.</p><ul><li>driven by <strong>Co2 Emissions</strong></li></ul>"
     );
   });
 });
