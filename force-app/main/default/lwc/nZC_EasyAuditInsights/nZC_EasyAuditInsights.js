@@ -7,6 +7,11 @@
  * "Ask AI About This Audit Trail": once nZC_EasyAudit builds the client-side audit trail
  * (instructions), auto-generate a plain-language summary, and let the user ask single-shot
  * follow-up questions about it via the NZC_EasyAudit_Audit_Insights prompt template.
+ *
+ * The initial summary call doubles as a live availability probe: if Prompt Builder / Einstein
+ * Generative AI isn't activated in the org (or the template isn't deployed/published), that call
+ * fails and the whole panel stays hidden rather than surfacing an error for a feature the org
+ * never turned on.
  */
 import { LightningElement, api } from "lwc";
 import { ShowToastEvent } from "lightning/platformShowToastEvent";
@@ -29,9 +34,9 @@ export default class NZCEasyAuditInsights extends LightningElement {
   _instructions;
   didRequestSummary = false;
 
+  probeComplete = false;
+  aiAvailable = false;
   summaryText = "";
-  isLoadingSummary = false;
-  summaryError = "";
 
   userQuestion = "";
   aiResponse = "";
@@ -53,6 +58,16 @@ export default class NZCEasyAuditInsights extends LightningElement {
 
   get hasInstructions() {
     return Array.isArray(this._instructions) && this._instructions.length > 0;
+  }
+
+  /** True once the availability probe (the initial summary call) has resolved either way. */
+  get isProbing() {
+    return !this.probeComplete;
+  }
+
+  /** Only render the AI panel once we've confirmed the org can actually generate a response. */
+  get showAiPanel() {
+    return this.probeComplete && this.aiAvailable;
   }
 
   get auditTrailJson() {
@@ -78,18 +93,19 @@ export default class NZCEasyAuditInsights extends LightningElement {
   }
 
   async loadSummary() {
-    this.isLoadingSummary = true;
-    this.summaryError = "";
     try {
       const text = await getAuditSummary({
         recordId: this.recordId,
         auditTrailJson: this.auditTrailJson
       });
       this.summaryText = text || "";
-    } catch (error) {
-      this.summaryError = this.extractErrorMessage(error);
+      this.aiAvailable = true;
+    } catch {
+      // Treat any failure (feature not activated, template not published, etc.) as
+      // "AI isn't available here" rather than surfacing an error for a disabled feature.
+      this.aiAvailable = false;
     } finally {
-      this.isLoadingSummary = false;
+      this.probeComplete = true;
     }
   }
 

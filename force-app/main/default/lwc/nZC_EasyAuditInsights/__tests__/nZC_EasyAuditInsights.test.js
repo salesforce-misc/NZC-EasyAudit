@@ -83,6 +83,26 @@ describe("c-n-z-c-easy-audit-insights", () => {
     expect(getAuditSummary).toHaveBeenCalledTimes(1);
   });
 
+  it("stays hidden when the summary probe fails (AI not activated)", async () => {
+    getAuditSummary.mockRejectedValue({
+      body: { message: "Prompt Builder isn't enabled for this org." }
+    });
+
+    const element = createElement("c-n-z-c-easy-audit-insights", {
+      is: NZCEasyAuditInsights
+    });
+    element.recordId = "a01000000000001AAA";
+    document.body.appendChild(element);
+    element.instructions = SAMPLE_INSTRUCTIONS;
+
+    await Promise.resolve();
+    await Promise.resolve();
+    await Promise.resolve();
+
+    expect(getAuditSummary).toHaveBeenCalledTimes(1);
+    expect(element.shadowRoot.querySelector(".ask-ai-card")).toBeNull();
+  });
+
   it("asks a question and renders the response", async () => {
     getAuditSummary.mockResolvedValue("Summary text");
     askAuditQuestion.mockResolvedValue(
