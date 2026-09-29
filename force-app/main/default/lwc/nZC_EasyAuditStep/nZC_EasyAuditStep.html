@@ -7,21 +7,21 @@
 
 <!-- NZc Easy Audit Step -->
 <template>
-    <lightning-accordion-section label={displayTitle}>
-        <template if:true={recordLinkId}>
-            <div class="slds-m-bottom_small">
-                <lightning-formatted-url
-                    value={recordLinkId}
-                    label={recordLinkName}
-                ></lightning-formatted-url>
-            </div>
-        </template>
-        <template for:each={lineRows} for:item="row">
-            <article key={row.key} class="slds-tile slds-media slds-m-bottom_x-small">
-                <div class="slds-media__body slds-text-body_regular">
-                    <lightning-formatted-text value={row.text}></lightning-formatted-text>
-                </div>
-            </article>
-        </template>
-    </lightning-accordion-section>
+  <lightning-accordion-section name={sectionName} label={displayTitle}>
+    <template if:true={recordLinkId}>
+      <div class="slds-m-bottom_small">
+        <lightning-formatted-url
+          value={recordLinkId}
+          label={recordLinkName}
+        ></lightning-formatted-url>
+      </div>
+    </template>
+    <div class="formula-block">
+      <template for:each={lineRows} for:item="row">
+        <div key={row.key} class={row.rowClass}>
+          <lightning-formatted-text value={row.text}></lightning-formatted-text>
+        </div>
+      </template>
+    </div>
+  </lightning-accordion-section>
 </template>

@@ -82,8 +82,8 @@ Documentation is updated regularly to reflect:
 - Best practices and recommendations
 - Common issues and solutions
 
-**Last Updated:** January 2026  
-**Version:** 1.0
+**Last Updated:** September 2026  
+**Version:** 1.1 (includes AI Audit Insights)
 
 ---
 

@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="UTF-8"?>
+<?xml version="1.0" encoding="UTF-8" ?>
 <PermissionSet xmlns="http://soap.sforce.com/2006/04/metadata">
     <classAccesses>
         <apexClass>NZC_EasyAuditControllerV2</apexClass>
@@ -12,7 +12,16 @@
         <apexClass>NZC_EasyAuditInfoWrapper</apexClass>
         <enabled>true</enabled>
     </classAccesses>
-    <description>Provides access to NZC EasyAudit Apex classes and Lightning Web Components</description>
+    <classAccesses>
+        <apexClass>NZC_EasyAuditAiController</apexClass>
+        <enabled>true</enabled>
+    </classAccesses>
+    <classAccesses>
+        <apexClass>NZC_EasyAuditPromptService</apexClass>
+        <enabled>true</enabled>
+    </classAccesses>
+    <description
+  >Provides access to NZC EasyAudit Apex classes and Lightning Web Components</description>
     <hasActivationRequired>false</hasActivationRequired>
     <label>NZC EasyAudit Access</label>
 </PermissionSet>

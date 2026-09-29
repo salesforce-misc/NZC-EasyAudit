@@ -264,20 +264,29 @@ public with sharing class AccountController {
 ### Data Flow
 ```
 Record → Apex Controller → InfoWrapper → Calculation Class → Step Component → Display
+                                                              ↘ Insights (optional Prompt Builder Q&A)
 ```
 
 ### Key Components
 1. **nZC_EasyAudit**: Main orchestrator
 2. **nZC_EasyAuditStep**: Individual step display
-3. **nZC_EasyAuditVehicleCalc**: Vehicle calculations
-4. **nZC_EasyAuditStationaryCalc**: Stationary calculations
-5. **NZC_EasyAuditControllerV2**: Apex controller
+3. **nZC_EasyAuditInsights**: Optional AI summary / Q&A panel (hides if Prompt Builder unavailable)
+4. **nZC_EasyAuditVehicleCalc**: Vehicle calculations
+5. **nZC_EasyAuditStationaryCalc**: Stationary calculations
+6. **NZC_EasyAuditControllerV2**: Apex data controller
+7. **NZC_EasyAuditAiController** / **NZC_EasyAuditPromptService**: AI Insights façade + ConnectApi prompt invocation
+8. **NZC_EasyAudit_Audit_Insights**: GenAI flex prompt template
 
 ### No DML Operations
 This is a **read-only component**. If extending with write operations:
 - Implement full fflib patterns (Selector/Service/UoW)
 - Follow DML best practices from Apex Rules
 - Add appropriate test coverage for DML
+
+### AI Insights Notes
+- Audit trail JSON is built client-side and passed to Apex; do not re-query to rebuild it in the AI controller
+- Initial summary call is the availability probe—failures must hide the panel, not toast errors
+- Response formatting helpers live in `nZC_EasyAuditInsights` (LaTeX strip, decimal rounding, safe Markdown)
 
 ---
 

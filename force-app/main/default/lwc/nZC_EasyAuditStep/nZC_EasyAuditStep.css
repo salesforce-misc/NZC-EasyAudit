@@ -3,4 +3,27 @@
  * All rights reserved.
  * SPDX-License-Identifier: Apache-2.0
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/Apache-2.0
+ *
+ * Theme-aware: uses SLDS 2 global styling hooks so the formula block matches org theme.
  */
+.formula-block {
+  border-radius: 0.25rem;
+  border-left: 3px solid var(--slds-g-color-brand-base-50, #0176d3);
+  background: var(--slds-g-color-neutral-base-95, #f3f3f3);
+  padding: 0.75rem 1rem;
+  font-family:
+    "SFMono-Regular", "Consolas", "Liberation Mono", "Menlo", monospace;
+  font-size: 0.8125rem;
+}
+
+.formula-line {
+  white-space: pre-wrap;
+  word-break: break-word;
+  line-height: 1.5;
+  color: var(--slds-g-color-neutral-base-10, #080707);
+}
+
+.formula-line_substitution {
+  padding-left: 1.5rem;
+  color: var(--slds-g-color-neutral-base-50, #747474);
+}

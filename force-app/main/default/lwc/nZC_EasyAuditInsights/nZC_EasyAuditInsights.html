@@ -1,0 +1,142 @@
+<!--
+ Copyright (c) 2026, Salesforce, Inc.
+ All rights reserved.
+ SPDX-License-Identifier: Apache-2.0
+ For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/Apache-2.0
+ -->
+
+<!-- NZC_EasyAuditInsights -->
+<template>
+  <template if:true={hasInstructions}>
+    <template if:true={isProbing}>
+      <article class="ask-ai-card slds-card slds-var-m-top_medium">
+        <div class="ask-ai-card__accent"></div>
+        <div class="slds-card__header slds-grid">
+          <header class="slds-media slds-media_center slds-has-flexi-truncate">
+            <div class="slds-media__figure">
+              <lightning-icon
+                icon-name="utility:bot"
+                size="small"
+                alternative-text=""
+              ></lightning-icon>
+            </div>
+            <div class="slds-media__body">
+              <h2 class="slds-card__header-title">
+                <span class="ask-ai-card__title">AI Audit Insights</span>
+              </h2>
+            </div>
+          </header>
+        </div>
+        <div
+          class="slds-card__body slds-card__body_inner slds-align_absolute-center"
+        >
+          <lightning-spinner
+            alternative-text="Checking AI availability"
+            size="small"
+          ></lightning-spinner>
+        </div>
+      </article>
+    </template>
+
+    <template if:true={showAiPanel}>
+      <article class="ask-ai-card slds-card slds-var-m-top_medium">
+        <div class="ask-ai-card__accent"></div>
+        <div class="slds-card__header slds-grid">
+          <header class="slds-media slds-media_center slds-has-flexi-truncate">
+            <div class="slds-media__figure">
+              <lightning-icon
+                icon-name="utility:bot"
+                size="small"
+                alternative-text=""
+              ></lightning-icon>
+            </div>
+            <div class="slds-media__body">
+              <h2 class="slds-card__header-title">
+                <span class="ask-ai-card__title">AI Audit Insights</span>
+              </h2>
+            </div>
+          </header>
+        </div>
+
+        <div class="slds-card__body slds-card__body_inner">
+          <template if:true={summaryText}>
+            <div class="summary-box slds-var-m-bottom_medium">
+              <p
+                class="slds-text-body_small slds-text-color_weak slds-var-m-bottom_xx-small"
+              >
+                Summary
+              </p>
+              <lightning-formatted-rich-text
+                class="response-text"
+                value={summaryHtml}
+              ></lightning-formatted-rich-text>
+            </div>
+          </template>
+
+          <div class="slds-var-m-bottom_medium">
+            <p class="slds-text-body_small slds-var-m-bottom_x-small">
+              Try asking:
+            </p>
+            <div class="pill-row">
+              <template for:each={suggestedPrompts} for:item="pill">
+                <button
+                  key={pill.id}
+                  type="button"
+                  class={pill.pillClass}
+                  data-sid={pill.id}
+                  aria-label={pill.text}
+                  onclick={handlePillClick}
+                >
+                  {pill.text}
+                </button>
+              </template>
+            </div>
+          </div>
+
+          <div class="ask-row">
+            <lightning-textarea
+              label="Your question"
+              variant="label-hidden"
+              placeholder="Ask a question about this audit trail..."
+              value={userQuestion}
+              onchange={handleQuestionChange}
+              disabled={isAsking}
+              class="ask-textarea"
+            ></lightning-textarea>
+            <div class="slds-var-m-top_x-small slds-align_absolute-center">
+              <lightning-button
+                label="Ask"
+                variant="brand"
+                onclick={handleAsk}
+                disabled={disableAsk}
+              ></lightning-button>
+            </div>
+          </div>
+
+          <template if:true={isAsking}>
+            <div class="slds-var-m-top_medium slds-align_absolute-center">
+              <lightning-spinner
+                alternative-text="Generating response"
+                size="small"
+              ></lightning-spinner>
+            </div>
+          </template>
+
+          <template if:true={aiResponse}>
+            <div class="slds-var-m-top_medium response-box">
+              <p
+                class="slds-text-body_small slds-text-color_weak slds-var-m-bottom_xx-small"
+              >
+                Response
+              </p>
+              <lightning-formatted-rich-text
+                class="response-text"
+                value={responseHtml}
+              ></lightning-formatted-rich-text>
+            </div>
+          </template>
+        </div>
+      </article>
+    </template>
+  </template>
+</template>

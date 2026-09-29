@@ -13,7 +13,8 @@ This guide helps end users understand how to use the NZC EasyAudit component to 
 3. [Understanding the Display](#understanding-the-display)
 4. [Viewing Calculations](#viewing-calculations)
 5. [Interpreting Results](#interpreting-results)
-6. [Common Questions](#common-questions)
+6. [Using AI Audit Insights](#using-ai-audit-insights)
+7. [Common Questions](#common-questions)
 
 ---
 
@@ -194,6 +195,24 @@ Some sections include **links to related records**:
 
 ---
 
+## Using AI Audit Insights
+
+Some orgs show an **Ask AI About This Audit Trail** panel below the calculation steps. This feature is optional and only appears when your administrator has enabled Einstein Generative AI / Prompt Builder.
+
+### What you can do
+
+1. Read the **auto-generated summary** of the calculation trail
+2. Click a **suggestion** (for example, which step mattered most, which emission factor was used, or walk through the final formula)
+3. Or type your own question and click Ask
+
+Answers are based on the same calculation steps shown in the accordion—not on other records in your org.
+
+### If you do not see the AI panel
+
+That usually means AI Insights is not activated in your org. You can still use the full step-by-step audit trail. Contact your administrator if you expected the AI panel to appear.
+
+---
+
 ## Common Questions
 
 ### Q: Why don't I see the component?
@@ -203,6 +222,10 @@ Some sections include **links to related records**:
 - Verify the component was added to the Lightning page
 - Check that you're viewing a Vehicle or Stationary Energy Use record
 - Contact your administrator if issues persist
+
+### Q: Why don't I see the AI Insights panel?
+
+**A:** The panel only appears when Generative AI / Prompt Builder is available and working. If it is not configured, EasyAudit hides the panel on purpose so you are not shown an error for a feature your org has not turned on.
 
 ### Q: Why are some sections empty?
 

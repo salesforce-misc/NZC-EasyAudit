@@ -64,7 +64,7 @@ The NZC EasyAudit component requires read access to multiple Net Zero Cloud obje
 
 ### 2.1 Option A: Use Deployed Permission Set (Recommended)
 
-**Note:** A permission set named `NZC EasyAudit Access` (API Name: `NZC_EasyAudit_Access`) is included in the deployment package. This permission set includes Apex class access for the three required Apex classes. You only need to:
+**Note:** A permission set named `NZC EasyAudit Access` (API Name: `NZC_EasyAudit_Access`) is included in the deployment package. This permission set includes Apex class access for the required Apex classes (data controller, constants, wrapper, and AI Insights). You only need to:
 
 1. **Assign Object and Field Permissions** (see Step 2 below)
 2. **Assign the Permission Set to Users** (see Step 5 below)
@@ -78,6 +78,8 @@ The NZC EasyAudit component requires read access to multiple Net Zero Cloud obje
    - `NZC_EasyAuditControllerV2`
    - `NZC_EasyAuditConstants`
    - `NZC_EasyAuditInfoWrapper`
+   - `NZC_EasyAuditAiController`
+   - `NZC_EasyAuditPromptService`
 
 #### Step 2: Assign Object Permissions
 
@@ -150,10 +152,12 @@ The deployed permission set already includes Apex class access for:
 - `NZC_EasyAuditControllerV2`
 - `NZC_EasyAuditConstants`
 - `NZC_EasyAuditInfoWrapper`
+- `NZC_EasyAuditAiController`
+- `NZC_EasyAuditPromptService`
 
 **Verification:**
 1. In the permission set, click **Apex Class Access**
-2. Verify the three classes listed above are in the **Enabled Apex Classes** section
+2. Verify the classes listed above are in the **Enabled Apex Classes** section
 3. If any are missing, add them manually
 
 #### Step 5: Lightning Web Component Access (Optional)
@@ -168,6 +172,7 @@ If you need to restrict LWC access, you can add it manually:
 3. Move the following components to **Enabled Lightning Web Components** (if needed):
    - `nZC_EasyAudit`
    - `nZC_EasyAuditStep`
+   - `nZC_EasyAuditInsights`
    - `nZC_EasyAuditVehicleCalc`
    - `nZC_EasyAuditStationaryCalc`
    - `nZC_EasyAuditUnitConversion`
@@ -196,7 +201,9 @@ If you prefer to create a custom permission set:
 6. Add Apex class access manually:
    - Click **Apex Class Access**
    - Click **Edit**
-   - Move the three Apex classes to **Enabled Apex Classes**
+   - Move the required Apex classes to **Enabled Apex Classes**
+     (`NZC_EasyAuditControllerV2`, `NZC_EasyAuditConstants`, `NZC_EasyAuditInfoWrapper`,
+     `NZC_EasyAuditAiController`, `NZC_EasyAuditPromptService`)
    - Click **Save**
 
 ### 2.3 Option C: Update Profiles (Alternative)
@@ -280,6 +287,34 @@ The NZC EasyAudit component must be added to Lightning pages to be visible to us
    - Appropriate **App(s)**
    - Appropriate **Record Types** (if applicable)
    - Appropriate **Profiles** (if page visibility is restricted)
+
+---
+
+## AI Audit Insights (Optional)
+
+AI Audit Insights adds a plain-language summary and Q&A panel on top of the calculation trail. Core EasyAudit does **not** require this feature.
+
+### Prerequisites
+
+- Einstein Generative AI enabled in the org
+- Prompt Builder available
+- Deployed prompt template **NZC EasyAudit Audit Insights** is **Published**
+- Users have the **NZC EasyAudit Access** permission set (includes AI Apex class access)
+
+### How it behaves
+
+1. After EasyAudit builds the calculation trail, the AI panel requests an automatic summary
+2. If that request succeeds, the panel appears with the summary and suggested questions
+3. If Prompt Builder / Generative AI is unavailable (or the template is not published), the panel stays **hidden**—no error is shown to the user
+
+### Verification
+
+1. Open a Vehicle or Stationary Energy Use record with EasyAudit on the page
+2. Wait for the calculation accordion to finish loading
+3. Confirm the **Ask AI About This Audit Trail** panel appears with a summary
+4. Ask a follow-up question (or use a suggestion chip) and confirm a response returns
+
+If the panel never appears, revisit the prerequisites above. EasyAudit calculations still work without AI.
 
 ---
 
@@ -620,6 +655,11 @@ Use this checklist to ensure all configuration steps are completed:
 - [ ] Component added to Stationary Energy Use page
 - [ ] Pages activated
 - [ ] Page assignments verified
+
+### AI Audit Insights (Optional)
+- [ ] Einstein Generative AI / Prompt Builder activated (if using AI)
+- [ ] NZC EasyAudit Audit Insights prompt template published
+- [ ] AI panel verified on a sample energy-use record
 
 ### Testing
 - [ ] Tested with Vehicle Energy Use record

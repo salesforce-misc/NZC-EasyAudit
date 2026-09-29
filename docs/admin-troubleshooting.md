@@ -11,10 +11,11 @@ This guide provides detailed troubleshooting steps for common issues administrat
 1. [Deployment Issues](#deployment-issues)
 2. [Security and Access Issues](#security-and-access-issues)
 3. [Component Display Issues](#component-display-issues)
-4. [Calculation Issues](#calculation-issues)
-5. [Performance Issues](#performance-issues)
-6. [Data Quality Issues](#data-quality-issues)
-7. [Getting Additional Help](#getting-additional-help)
+4. [AI Audit Insights Issues](#ai-audit-insights-issues)
+5. [Calculation Issues](#calculation-issues)
+6. [Performance Issues](#performance-issues)
+7. [Data Quality Issues](#data-quality-issues)
+8. [Getting Additional Help](#getting-additional-help)
 
 ---
 
@@ -334,6 +335,55 @@ This guide provides detailed troubleshooting steps for common issues administrat
    - Check browser console for errors
    - Verify data quality
    - Review calculation class logic
+
+---
+
+## AI Audit Insights Issues
+
+### Issue: AI Panel Never Appears
+
+**Symptoms:**
+- Calculation accordion works, but no "Ask AI About This Audit Trail" section
+- No error toast for missing AI
+
+**Possible Causes:**
+- Einstein Generative AI not activated
+- Prompt Builder not available
+- Prompt template not published
+- User missing EasyAudit access permission set
+- Org intentionally without Generative AI (expected hide behavior)
+
+**Solutions:**
+
+1. **Confirm Generative AI / Prompt Builder**
+   - Setup → search for Einstein / Generative AI / Prompt Builder settings
+   - Ensure features required for Prompt Builder templates are enabled
+
+2. **Confirm Prompt Template**
+   - Open Prompt Builder
+   - Find **NZC EasyAudit Audit Insights**
+   - Verify status is **Published**
+
+3. **Confirm Permission Set**
+   - Assign **NZC EasyAudit Access**
+   - Verify Apex class access includes the AI controller and prompt service classes
+
+4. **Expected Behavior**
+   - If AI is unavailable, EasyAudit hides the panel on purpose
+   - Core audit trail remains fully usable without AI
+
+### Issue: AI Panel Appears but Questions Fail
+
+**Symptoms:**
+- Summary may load, but Ask returns an error toast
+- Intermittent generation failures
+
+**Solutions:**
+
+1. Retry after confirming model / Prompt Builder health in the org
+2. Verify the audit trail finished loading before asking
+3. Check that the user question is not blank
+4. Review Salesforce debug logs for ConnectApi / Einstein generation errors
 
 ---
 

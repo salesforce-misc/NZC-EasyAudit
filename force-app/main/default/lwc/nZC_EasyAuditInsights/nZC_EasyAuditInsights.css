@@ -1,0 +1,102 @@
+/**
+ * Copyright (c) 2026, Salesforce, Inc.
+ * SPDX-License-Identifier: Apache-2.0
+ *
+ * Theme-aware: uses SLDS 2 global styling hooks so the card matches org theme (Lightning / Experience Cloud).
+ */
+.ask-ai-card {
+  position: relative;
+  border: 1px solid var(--slds-g-color-neutral-base-30, #dddbda);
+  border-radius: 0.25rem;
+  background: var(--slds-g-color-neutral-base-100, #ffffff);
+  color: var(--slds-g-color-neutral-base-10, #080707);
+  box-shadow: 0 2px 2px 0 rgba(0, 0, 0, 0.1);
+}
+
+.ask-ai-card__accent {
+  height: 3px;
+  border-radius: 0.25rem 0.25rem 0 0;
+  background: var(--slds-g-color-brand-base-50, #0176d3);
+}
+
+.ask-ai-card__title {
+  font-weight: 600;
+  font-size: 1rem;
+  color: var(--slds-g-color-neutral-base-10, #080707);
+}
+
+.pill-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+}
+
+.pill {
+  text-align: left;
+  cursor: pointer;
+  border: 1px solid var(--slds-g-color-neutral-base-30, #dddbda);
+  border-radius: 999px;
+  padding: 0.35rem 0.75rem;
+  font-size: 0.8125rem;
+  line-height: 1.25;
+  background: var(--slds-g-color-neutral-base-95, #f3f3f3);
+  color: var(--slds-g-color-neutral-base-10, #080707);
+  max-width: 100%;
+}
+
+.pill:hover {
+  background: var(--slds-g-color-neutral-base-95, #f3f3f3);
+  border-color: var(--slds-g-color-brand-base-50, #0176d3);
+}
+
+.pill_selected {
+  background: var(--slds-g-color-brand-base-50, #0176d3);
+  color: var(--slds-g-color-neutral-base-100, #ffffff);
+  border-color: var(--slds-g-color-brand-base-50, #0176d3);
+}
+
+.pill_selected:hover {
+  background: var(--slds-g-color-brand-base-50, #0176d3);
+  color: var(--slds-g-color-neutral-base-100, #ffffff);
+}
+
+.ask-row {
+  margin-top: 0.5rem;
+}
+
+.ask-textarea {
+  display: block;
+}
+
+.ask-textarea textarea {
+  min-height: 5rem;
+}
+
+.summary-box,
+.response-box {
+  border: 1px solid var(--slds-g-color-neutral-base-30, #dddbda);
+  border-radius: 0.25rem;
+  padding: 0.75rem;
+  background: var(--slds-g-color-neutral-base-95, #fafaf9);
+  color: var(--slds-g-color-neutral-base-10, #080707);
+}
+
+.response-text {
+  word-break: break-word;
+  font-size: 0.875rem;
+  line-height: 1.5;
+  color: var(--slds-g-color-neutral-base-10, #080707);
+}
+
+.response-text p {
+  margin: 0 0 0.5rem;
+}
+
+.response-text p:last-child {
+  margin-bottom: 0;
+}
+
+.response-text ul {
+  margin: 0.25rem 0;
+  padding-left: 1.25rem;
+}
