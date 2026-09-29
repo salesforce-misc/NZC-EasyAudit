@@ -4,6 +4,8 @@
 
 This guide provides step-by-step instructions for configuring the NZC EasyAudit component after deployment to your Salesforce org. Follow these steps to ensure proper access, security, and functionality.
 
+> **Note:** For the full AI Audit Insights setup (optional Einstein Prompt Builder configuration), see [docs/admin-setup.md](docs/admin-setup.md#ai-audit-insights-optional).
+
 ---
 
 ## Table of Contents
@@ -64,7 +66,7 @@ The NZC EasyAudit component requires read access to multiple Net Zero Cloud obje
 
 ### 2.1 Option A: Use Deployed Permission Set (Recommended)
 
-**Note:** A permission set named `NZC EasyAudit Access` (API Name: `NZC_EasyAudit_Access`) is included in the deployment package. This permission set includes Apex class access for the three required Apex classes. You only need to:
+**Note:** A permission set named `NZC EasyAudit Access` (API Name: `NZC_EasyAudit_Access`) is included in the deployment package. This permission set includes Apex class access for the required Apex classes (data controller, constants, wrapper, and AI Insights). You only need to:
 
 1. **Assign Object and Field Permissions** (see Step 2 below)
 2. **Assign the Permission Set to Users** (see Step 5 below)
@@ -80,6 +82,8 @@ If you prefer to create a custom permission set or need to modify the existing o
    - `NZC_EasyAuditControllerV2`
    - `NZC_EasyAuditConstants`
    - `NZC_EasyAuditInfoWrapper`
+   - `NZC_EasyAuditAiController`
+   - `NZC_EasyAuditPromptService`
 
 #### Step 2: Assign Object Permissions
 
@@ -152,10 +156,12 @@ The deployed permission set already includes Apex class access for:
 - `NZC_EasyAuditControllerV2`
 - `NZC_EasyAuditConstants`
 - `NZC_EasyAuditInfoWrapper`
+- `NZC_EasyAuditAiController`
+- `NZC_EasyAuditPromptService`
 
 **Verification:**
 1. In the permission set, click **Apex Class Access**
-2. Verify the three classes listed above are in the **Enabled Apex Classes** section
+2. Verify the classes listed above are in the **Enabled Apex Classes** section
 3. If any are missing, add them manually
 
 #### Step 4: Lightning Web Component Access (Optional)
@@ -170,6 +176,7 @@ If you need to restrict LWC access, you can add it manually:
 3. Move the following components to **Enabled Lightning Web Components** (if needed):
    - `nZC_EasyAudit`
    - `nZC_EasyAuditStep`
+   - `nZC_EasyAuditInsights`
    - `nZC_EasyAuditVehicleCalc`
    - `nZC_EasyAuditStationaryCalc`
    - `nZC_EasyAuditUnitConversion`

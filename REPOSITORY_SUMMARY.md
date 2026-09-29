@@ -36,6 +36,7 @@ The accelerator addresses the need for transparency in emissions calculations by
      - `nZC_EasyAuditVehicleCalc` (JS)
      - `nZC_EasyAuditStationaryCalc` (JS)
      - `nZC_EasyAuditStep` (LWC child component)
+     - `nZC_EasyAuditInsights` (LWC child component — optional AI panel)
 
 2. **nZC_EasyAuditStep** (`force-app/main/default/lwc/nZC_EasyAuditStep/`)
    - **Purpose**: Displays individual calculation steps in accordion sections
@@ -45,7 +46,17 @@ The accelerator addresses the need for transparency in emissions calculations by
      - Provides expandable accordion sections
    - **Props**: `stepInstruction` (object containing step data)
 
-3. **nZC_EasyAuditVehicleCalc** (`force-app/main/default/lwc/nZC_EasyAuditVehicleCalc/`)
+3. **nZC_EasyAuditInsights** (`force-app/main/default/lwc/nZC_EasyAuditInsights/`)
+   - **Purpose**: Optional "Ask AI About This Audit Trail" panel
+   - **Key Responsibilities**:
+     - Auto-generates a plain-language summary once the audit trail is ready
+     - Uses the initial summary call as an availability probe; hides the panel if Prompt Builder / Einstein Generative AI is unavailable
+     - Accepts suggestion chips or free-text questions about the trail
+     - Formats model output safely (strip LaTeX, round long decimals, Markdown → rich text)
+   - **Props**: `recordId`, `instructions` (audit trail steps from parent)
+   - **Dependencies**: `NZC_EasyAuditAiController` (Apex)
+
+4. **nZC_EasyAuditVehicleCalc** (`force-app/main/default/lwc/nZC_EasyAuditVehicleCalc/`)
    - **Purpose**: JavaScript class that performs vehicle energy use emissions calculations
    - **Key Responsibilities**:
      - Processes vehicle energy use data
@@ -56,7 +67,7 @@ The accelerator addresses the need for transparency in emissions calculations by
      - `nZC_EasyAuditLogging` (for step creation)
      - `nZC_EasyAuditUnitConversion` (for unit conversions)
 
-4. **nZC_EasyAuditStationaryCalc** (`force-app/main/default/lwc/nZC_EasyAuditStationaryCalc/`)
+5. **nZC_EasyAuditStationaryCalc** (`force-app/main/default/lwc/nZC_EasyAuditStationaryCalc/`)
    - **Purpose**: JavaScript class that performs stationary energy use emissions calculations
    - **Key Responsibilities**:
      - Processes stationary energy use data
@@ -68,7 +79,7 @@ The accelerator addresses the need for transparency in emissions calculations by
      - `nZC_EasyAuditLogging` (for step creation)
      - `nZC_EasyAuditUnitConversion` (for unit conversions)
 
-5. **nZC_EasyAuditUnitConversion** (`force-app/main/default/lwc/nZC_EasyAuditUnitConversion/`)
+6. **nZC_EasyAuditUnitConversion** (`force-app/main/default/lwc/nZC_EasyAuditUnitConversion/`)
    - **Purpose**: Utility module for unit conversions
    - **Key Responsibilities**:
      - Provides conversion factors for various units
@@ -76,7 +87,7 @@ The accelerator addresses the need for transparency in emissions calculations by
      - Handles fuel consumption unit conversions
      - Handles distance and area conversions
 
-6. **nZC_EasyAuditLogging** (`force-app/main/default/lwc/nZC_EasyAuditLogging/`)
+7. **nZC_EasyAuditLogging** (`force-app/main/default/lwc/nZC_EasyAuditLogging/`)
    - **Purpose**: Utility class for creating calculation step objects
    - **Key Responsibilities**:
      - Creates structured calculation step objects
@@ -130,13 +141,31 @@ The accelerator addresses the need for transparency in emissions calculations by
      - Default scope mappings for owned assets
    - **Sharing**: `with sharing`
 
-4. **NZC_EasyAuditControllerV2Test** (`force-app/main/default/classes/NZC_EasyAuditControllerV2Test.cls`)
-   - **Purpose**: Test class for controller
-   - **Coverage**: Tests vehicle and stationary processing, custom fuel handling
-   - **Test Methods**:
-     - `testProcessStationary()` - Tests stationary energy use processing
-     - `testProcessVehicle()` - Tests vehicle energy use processing
-     - `testCustomFuel()` - Tests custom fuel/unit conversion handling
+4. **NZC_EasyAuditAiController** (`force-app/main/default/classes/NZC_EasyAuditAiController.cls`)
+   - **Purpose**: Thin façade for the AI Insights panel
+   - **Key Methods**:
+     - `getAuditSummary(recordId, auditTrailJson)` - Canned summary instruction over the client-built trail
+     - `askAuditQuestion(recordId, auditTrailJson, userQuestion)` - Free-text Q&A over the trail
+   - **Notes**: Audit trail exists only client-side; JSON is passed up rather than re-derived. Not cacheable (generative).
+   - **Sharing**: `with sharing`
+   - **Dependencies**: `NZC_EasyAuditPromptService`
+
+5. **NZC_EasyAuditPromptService** (`force-app/main/default/classes/NZC_EasyAuditPromptService.cls`)
+   - **Purpose**: Invokes Einstein Prompt Template generations via ConnectApi
+   - **Key Constants**: `PROMPT_TEMPLATE_API_NAME` = `NZC_EasyAudit_Audit_Insights`
+   - **Key Methods**: `ask(auditTrailJson, userQuery)` - Builds input params and returns first generation text
+   - **Sharing**: `with sharing`
+
+6. **NZC_EasyAuditControllerV2Test** / **NZC_EasyAuditAiControllerTest**
+   - Test classes for the data controller and AI façade
+
+#### GenAI Prompt Templates
+
+1. **NZC_EasyAudit_Audit_Insights** (`force-app/main/default/genAiPromptTemplates/`)
+   - **Type**: `einstein_gpt__flex`
+   - **Inputs**: `Input:AuditTrailJson`, `Input:UserQuery`
+   - **Role**: Summarize or answer questions grounded only in the audit-trail JSON
+   - **Status**: Published in metadata; requires org Einstein / Prompt Builder activation at runtime
 
 ---
 
@@ -199,6 +228,7 @@ The accelerator addresses the need for transparency in emissions calculations by
    - Creates step-by-step instructions
 6. **Logging utility** formats calculation steps
 7. **Step component** displays each step in accordion format
+8. **Insights component** (optional) receives the same instructions JSON, probes Prompt Builder availability via summary generation, and offers Q&A when available
 
 ---
 
@@ -242,6 +272,12 @@ The accelerator addresses the need for transparency in emissions calculations by
 - Conversion factor application
 - Standard unit fallback
 
+### 7. AI Audit Insights (Optional)
+- Plain-language summary of the client-built audit trail
+- Single-shot follow-up questions grounded only in that trail
+- Panel auto-hides when Einstein Prompt Builder / Generative AI is not available
+- Client-side response sanitization (LaTeX strip, decimal rounding, safe Markdown)
+
 ---
 
 ## Directory Structure
@@ -261,14 +297,20 @@ NZC-EasyAudit/
 │           │   └── NZC_EasyAuditShell/
 │           ├── classes/         # Apex classes
 │           │   ├── NZC_EasyAuditControllerV2.cls
+│           │   ├── NZC_EasyAuditControllerV2Test.cls
 │           │   ├── NZC_EasyAuditConstants.cls
 │           │   ├── NZC_EasyAuditInfoWrapper.cls
-│           │   └── NZC_EasyAuditControllerV2Test.cls
+│           │   ├── NZC_EasyAuditAiController.cls
+│           │   ├── NZC_EasyAuditAiControllerTest.cls
+│           │   └── NZC_EasyAuditPromptService.cls
 │           ├── contentassets/   # Content assets
 │           ├── flexipages/      # Lightning pages
+│           ├── genAiPromptTemplates/  # Einstein Prompt Builder templates
+│           │   └── NZC_EasyAudit_Audit_Insights.genAiPromptTemplate-meta.xml
 │           ├── layouts/         # Page layouts
 │           ├── lwc/             # Lightning Web Components
 │           │   ├── nZC_EasyAudit/
+│           │   ├── nZC_EasyAuditInsights/
 │           │   ├── nZC_EasyAuditLogging/
 │           │   ├── nZC_EasyAuditStationaryCalc/
 │           │   ├── nZC_EasyAuditStep/
@@ -276,6 +318,7 @@ NZC-EasyAudit/
 │           │   └── nZC_EasyAuditVehicleCalc/
 │           ├── objects/         # Custom objects
 │           ├── permissionsets/   # Permission sets
+│           │   └── NZC_EasyAudit_Access/
 │           ├── staticresources/ # Static resources
 │           ├── tabs/            # Custom tabs
 │           └── triggers/        # Apex triggers
@@ -383,20 +426,22 @@ This is acceptable for a read-only audit component but should be considered if e
 ### Post-Deployment
 1. Add `NZC_EasyAuditShell` component to Lightning pages
 2. Configure on Vehicle Energy Use and/or Stationary Energy Use pages
-3. Test with sample records
+3. Assign `NZC_EasyAudit_Access` permission set (includes AI Apex class access)
+4. _(Optional)_ Activate Einstein Generative AI / Prompt Builder and confirm `NZC_EasyAudit_Audit_Insights` is published for AI Insights
+5. Test with sample records
 
 ---
 
 ## Testing
 
 ### Apex Tests
-- **Test Class**: `NZC_EasyAuditControllerV2Test`
-- **Coverage**: Tests vehicle, stationary, and custom fuel scenarios
+- **Test Classes**: `NZC_EasyAuditControllerV2Test`, `NZC_EasyAuditAiControllerTest`
+- **Coverage**: Vehicle, stationary, custom fuel, and AI façade validation scenarios
 - **Test Data**: Creates test emission factor sets, energy use records
 
 ### LWC Tests
 - Jest configuration in `jest.config.js`
-- Test files should be in `__tests__/` folders
+- Test files in `__tests__/` folders (including `nZC_EasyAudit`, `nZC_EasyAuditStep`, `nZC_EasyAuditInsights`)
 - Use `@salesforce/sfdx-lwc-jest` for testing
 
 ---
@@ -422,6 +467,12 @@ This is acceptable for a read-only audit component but should be considered if e
 4. Test thoroughly with various scenarios
 5. Update tests if needed
 
+### Changing AI Insights Behavior
+1. Prompt wording / grounding rules: edit `NZC_EasyAudit_Audit_Insights` GenAI template
+2. Summary canned instruction: `NZC_EasyAuditAiController`
+3. ConnectApi invocation: `NZC_EasyAuditPromptService`
+4. UI / availability probe / response formatting: `nZC_EasyAuditInsights`
+
 ---
 
 ## Key Files Reference
@@ -436,6 +487,12 @@ This is acceptable for a read-only audit component but should be considered if e
 - **Stationary Calculations**: `force-app/main/default/lwc/nZC_EasyAuditStationaryCalc/nZC_EasyAuditStationaryCalc.js`
 - **Data Wrapper**: `force-app/main/default/classes/NZC_EasyAuditInfoWrapper.cls`
 
+### AI Insights
+- **Insights LWC**: `force-app/main/default/lwc/nZC_EasyAuditInsights/nZC_EasyAuditInsights.js`
+- **AI Controller**: `force-app/main/default/classes/NZC_EasyAuditAiController.cls`
+- **Prompt Service**: `force-app/main/default/classes/NZC_EasyAuditPromptService.cls`
+- **Prompt Template**: `force-app/main/default/genAiPromptTemplates/NZC_EasyAudit_Audit_Insights.genAiPromptTemplate-meta.xml`
+
 ### Utilities
 - **Unit Conversion**: `force-app/main/default/lwc/nZC_EasyAuditUnitConversion/nZC_EasyAuditUnitConversion.js`
 - **Logging**: `force-app/main/default/lwc/nZC_EasyAuditLogging/nZC_EasyAuditLogging.js`
@@ -449,20 +506,22 @@ When working with this codebase:
 
 1. **Always read this file first** to understand the overall architecture
 2. **Component relationships**: LWC components compose together; Apex provides data
-3. **Data flow**: Record → Apex → InfoWrapper → Calculation Class → Step Component → Display
+3. **Data flow**: Record → Apex → InfoWrapper → Calculation Class → Step Component → Display; Insights optionally summarizes the same trail via Prompt Builder
 4. **Calculation logic**: Separated into VehicleCalc and StationaryCalc classes
 5. **No DML**: This is a read-only component; no data modification occurs
 6. **Net Zero Cloud**: Requires Net Zero Cloud objects and relationships
-7. **Testing**: Ensure test coverage maintained when making changes
+7. **AI is optional**: Insights panel must stay hidden when Prompt Builder is unavailable—do not surface activation errors as user-facing failures for that probe path
+8. **Testing**: Ensure test coverage maintained when making changes
 
 ---
 
 ## Version Information
 
 - **Source API Version**: 65.0
-- **Last Updated**: January 2026
+- **Last Updated**: September 2026
 - **Code Quality**: Integrated with SF Code Analyzer
 - **Security**: All queries enforce user-level security with `WITH USER_MODE`
+- **AI Insights**: Optional Einstein Prompt Builder integration (`NZC_EasyAudit_Audit_Insights`)
 
 ---
 

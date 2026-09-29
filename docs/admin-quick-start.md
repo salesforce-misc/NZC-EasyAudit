@@ -14,6 +14,7 @@ Before you begin, ensure you have:
 - ✅ **System Administrator** access or equivalent permissions
 - ✅ **Deployment permissions** in your Salesforce org
 - ✅ **Test records** available (Vehicle or Stationary Energy Use records)
+- ⚪ **Einstein Generative AI + Prompt Builder** _(optional — only needed for AI Audit Insights)_
 
 ---
 
@@ -110,6 +111,19 @@ sf project deploy start --source-dir force-app --target-org MyOrg
 
 ---
 
+## Step 5: Enable AI Audit Insights _(optional)_
+
+AI Insights summarizes the audit trail and answers follow-up questions. It is optional—EasyAudit works without it.
+
+1. Activate **Einstein Generative AI** and **Prompt Builder** in the org (Setup)
+2. Confirm the deployed template **NZC EasyAudit Audit Insights** is **Published**
+3. Open an energy-use record with EasyAudit on the page
+4. After the trail loads, look for the **Ask AI About This Audit Trail** panel with an auto-generated summary
+
+If the panel never appears, Generative AI / Prompt Builder is not available or the template is not published. That is expected; core EasyAudit still works.
+
+---
+
 ## Troubleshooting
 
 ### Component Not Visible?
@@ -130,6 +144,13 @@ sf project deploy start --source-dir force-app --target-org MyOrg
 - ✅ Verify emission factor records exist
 - ✅ Check that related records are properly linked
 - ✅ Review browser console for errors
+
+### AI Insights Panel Not Showing?
+
+- ✅ Confirm Einstein Generative AI and Prompt Builder are activated
+- ✅ Confirm **NZC EasyAudit Audit Insights** prompt template is published
+- ✅ Confirm the user has the EasyAudit access permission set
+- ✅ Remember: if AI is not available, the panel stays hidden on purpose
 
 ---
 

@@ -42,6 +42,13 @@
 - **Comprehensive Logging**: Detailed logging of calculation steps for audit purposes
 - **Lightning Web Components**: Modern, responsive UI built with Lightning Web Components
 
+### 🤖 **AI Audit Insights** _(optional)_
+
+- **Plain-Language Summary**: Automatically summarizes the calculation audit trail for business users when Einstein Prompt Builder is available
+- **Ask Follow-Up Questions**: Single-shot Q&A about which steps, factors, or formulas drove the result
+- **Graceful Degradation**: If Prompt Builder / Einstein Generative AI is not activated in the org, the AI panel stays hidden—core EasyAudit still works
+- **Safe Display**: Client-side cleanup strips residual LaTeX, rounds long decimals, and renders a safe Markdown subset
+
 ---
 
 ## 🚀 Getting Started
@@ -56,6 +63,7 @@ Before you begin, ensure you have the following:
 - ✅ **Salesforce user** with deployment permissions
 - ✅ **Active Salesforce org** (Sandbox or Developer Edition)
 - ✅ **VehicleAssetEnrgyUse or StnryAssetEnrgyUse records** in your org for testing
+- ⚪ **Einstein Generative AI + Prompt Builder** _(optional — required only for AI Audit Insights)_
 
 ### 🔧 Installation
 
@@ -136,6 +144,12 @@ After deploying with any method above, complete these manual steps:
    - Navigate to a record detail page
    - Verify the EasyAudit component displays correctly
 
+4. **Enable AI Audit Insights** _(optional)_
+   - Ensure Einstein Generative AI and Prompt Builder are activated in the org
+   - Confirm the deployed prompt template **NZC EasyAudit Audit Insights** is published
+   - Assign the `NZC EasyAudit Access` permission set (includes AI Apex class access)
+   - Open an energy-use record: the AI panel appears only when generation succeeds
+
 ---
 
 ## 🎯 Usage
@@ -175,16 +189,29 @@ The component displays calculations in an accordion format, showing:
 - **Calculation Steps**: Detailed mathematical steps for each calculation
 - **Final Results**: Total emissions broken down by scope and gas type
 
+### 🤖 **Using AI Audit Insights**
+
+When Einstein Prompt Builder is available in your org:
+
+1. Open a Vehicle or Stationary Energy Use record with EasyAudit on the page
+2. After the audit trail loads, an **Ask AI About This Audit Trail** panel appears with an auto-generated summary
+3. Use suggestion chips or type a question (for example, which step drove the result)
+4. Review the answer; it is grounded only in the displayed audit trail
+
+If the panel never appears, Prompt Builder / Generative AI is not activated (or the prompt template is not published)—EasyAudit still works without it.
+
 ---
 
 ## 🏗️ Technical Architecture
 
 This accelerator contains the following metadata:
 
-- **6 Lightning Web Components** (`nZC_EasyAudit`, `nZC_EasyAuditStep`, `nZC_EasyAuditVehicleCalc`, `nZC_EasyAuditStationaryCalc`, `nZC_EasyAuditUnitConversion`, `nZC_EasyAuditLogging`)
-- **3 Apex Classes** (`NZC_EasyAuditControllerV2`, `NZC_EasyAuditConstants`, `NZC_EasyAuditInfoWrapper`)
-- **1 Apex Test Class** (`NZC_EasyAuditControllerV2Test`)
+- **7 Lightning Web Components** (`nZC_EasyAudit`, `nZC_EasyAuditStep`, `nZC_EasyAuditInsights`, `nZC_EasyAuditVehicleCalc`, `nZC_EasyAuditStationaryCalc`, `nZC_EasyAuditUnitConversion`, `nZC_EasyAuditLogging`)
+- **5 Apex Classes** (`NZC_EasyAuditControllerV2`, `NZC_EasyAuditConstants`, `NZC_EasyAuditInfoWrapper`, `NZC_EasyAuditAiController`, `NZC_EasyAuditPromptService`)
+- **2 Apex Test Classes** (`NZC_EasyAuditControllerV2Test`, `NZC_EasyAuditAiControllerTest`)
 - **1 Aura Component** (`NZC_EasyAuditShell`)
+- **1 GenAI Prompt Template** (`NZC_EasyAudit_Audit_Insights`)
+- **1 Permission Set** (`NZC_EasyAudit_Access`)
 
 ### 🔒 Security & Code Quality
 
@@ -211,6 +238,10 @@ graph TB
     I --> K
     K --> L[nZC_EasyAuditStep]
     L --> M[Display Calculations]
+    B --> N[nZC_EasyAuditInsights]
+    N --> O[NZC_EasyAuditAiController]
+    O --> P[NZC_EasyAuditPromptService]
+    P --> Q[NZC_EasyAudit_Audit_Insights Prompt Template]
 ```
 
 ### 🧩 **Key Components**
@@ -223,6 +254,10 @@ graph TB
 | `nZC_EasyAuditVehicleCalc`   | JavaScript class that performs vehicle energy use emissions calculations |
 | `nZC_EasyAuditStationaryCalc`| JavaScript class that performs stationary energy use emissions calculations |
 | `nZC_EasyAuditStep`          | Lightning Web Component that displays individual calculation steps in accordion format |
+| `nZC_EasyAuditInsights`      | Optional AI panel: audit-trail summary and single-shot Q&A via Prompt Builder |
+| `NZC_EasyAuditAiController`  | Thin Apex façade for AI summary and question methods |
+| `NZC_EasyAuditPromptService` | Invokes the Einstein prompt template with audit-trail JSON and user query |
+| `NZC_EasyAudit_Audit_Insights`| Published GenAI flex prompt template for audit insights |
 | `nZC_EasyAuditUnitConversion`| Utility class for handling unit conversions between different measurement systems |
 | `NZC_EasyAuditShell`         | Aura component wrapper that enables the LWC to be added to Lightning pages |
 
