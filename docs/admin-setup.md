@@ -80,6 +80,10 @@ The NZC EasyAudit component requires read access to multiple Net Zero Cloud obje
    - `NZC_EasyAuditInfoWrapper`
    - `NZC_EasyAuditAiController`
    - `NZC_EasyAuditPromptService`
+   - `NZC_EasyAuditExportController`
+   - `NZC_EasyAuditExportService`
+   - `NZC_EasyAuditSampleController`
+   - `NZC_EasyAuditSampleService`
 
 #### Step 2: Assign Object Permissions
 
@@ -154,6 +158,10 @@ The deployed permission set already includes Apex class access for:
 - `NZC_EasyAuditInfoWrapper`
 - `NZC_EasyAuditAiController`
 - `NZC_EasyAuditPromptService`
+- `NZC_EasyAuditExportController`
+- `NZC_EasyAuditExportService`
+- `NZC_EasyAuditSampleController`
+- `NZC_EasyAuditSampleService`
 
 **Verification:**
 1. In the permission set, click **Apex Class Access**

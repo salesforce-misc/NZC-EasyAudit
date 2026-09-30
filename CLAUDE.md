@@ -255,38 +255,43 @@ public with sharing class AccountController {
 ## 🏗️ Project-Specific Context
 
 ### Architecture Overview
-- **Read-only audit component** - no DML operations
-- **Controller Pattern**: `NZC_EasyAuditControllerV2` handles data retrieval
+- **Mostly read-only** audit display; File export is the DML exception (ContentVersion via Export Service)
+- **Controller Pattern**: `NZC_EasyAuditControllerV2` handles data retrieval; `NZC_EasyAuditExportController` persists exports
 - **DTO Pattern**: `NZC_EasyAuditInfoWrapper` structures data
-- **Utility Classes**: Separate calculation and conversion logic
+- **Utility Classes**: Separate calculation, conversion, and export-builder logic
 - **Component Composition**: LWC components work together
 
 ### Data Flow
 ```
 Record → Apex Controller → InfoWrapper → Calculation Class → Step Component → Display
                                                               ↘ Insights (optional Prompt Builder Q&A)
+                                                              ↘ Export builder → Export Service → Files on record
 ```
 
 ### Key Components
-1. **nZC_EasyAudit**: Main orchestrator
+1. **nZC_EasyAudit**: Main orchestrator (includes Export audit action)
 2. **nZC_EasyAuditStep**: Individual step display
-3. **nZC_EasyAuditInsights**: Optional AI summary / Q&A panel (hides if Prompt Builder unavailable)
-4. **nZC_EasyAuditVehicleCalc**: Vehicle calculations
-5. **nZC_EasyAuditStationaryCalc**: Stationary calculations
-6. **NZC_EasyAuditControllerV2**: Apex data controller
-7. **NZC_EasyAuditAiController** / **NZC_EasyAuditPromptService**: AI Insights façade + ConnectApi prompt invocation
-8. **NZC_EasyAudit_Audit_Insights**: GenAI flex prompt template
+3. **nZC_EasyAuditInsights**: Optional AI summary / Q&A panel (hides if Prompt Builder unavailable); fires `summaryready`
+4. **nZC_EasyAuditExport**: Pure JSON/Markdown export builders (reusable)
+5. **nZC_EasyAuditSampleExport**: Home Page stratified sample + batch File export (last-run restore, File links, Download)
+6. **nZC_EasyAuditVehicleCalc**: Vehicle calculations
+7. **nZC_EasyAuditStationaryCalc**: Stationary calculations
+8. **NZC_EasyAuditControllerV2**: Apex data controller
+9. **NZC_EasyAuditAiController** / **NZC_EasyAuditPromptService**: AI Insights façade + ConnectApi prompt invocation
+10. **NZC_EasyAuditExportController** / **NZC_EasyAuditExportService**: File export persistence
+11. **NZC_EasyAuditSampleController** / **NZC_EasyAuditSampleService**: Stratified energy-use sampling + last-run File persistence
+12. **NZC_EasyAudit_Audit_Insights**: GenAI flex prompt template
 
-### No DML Operations
-This is a **read-only component**. If extending with write operations:
-- Implement full fflib patterns (Selector/Service/UoW)
-- Follow DML best practices from Apex Rules
-- Add appropriate test coverage for DML
+### DML Notes
+- Display/calc paths remain read-only
+- Export File inserts go only through `NZC_EasyAuditExportService` (future UnitOfWork seam)
+- Contract for other LLMs: `docs/design/audit-export-contract.md`
 
 ### AI Insights Notes
 - Audit trail JSON is built client-side and passed to Apex; do not re-query to rebuild it in the AI controller
 - Initial summary call is the availability probe—failures must hide the panel, not toast errors
 - Response formatting helpers live in `nZC_EasyAuditInsights` (LaTeX strip, decimal rounding, safe Markdown)
+- Load-time summary is included in File exports when `summaryready.available` is true
 
 ---
 

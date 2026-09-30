@@ -14,7 +14,8 @@ This guide helps end users understand how to use the NZC EasyAudit component to 
 4. [Viewing Calculations](#viewing-calculations)
 5. [Interpreting Results](#interpreting-results)
 6. [Using AI Audit Insights](#using-ai-audit-insights)
-7. [Common Questions](#common-questions)
+7. [Exporting the Audit Trail](#exporting-the-audit-trail)
+8. [Common Questions](#common-questions)
 
 ---
 
@@ -213,6 +214,33 @@ That usually means AI Insights is not activated in your org. You can still use t
 
 ---
 
+## Exporting the Audit Trail
+
+Use **Export audit** on the EasyAudit card to save the calculation trail as Files on the current record.
+
+1. Wait until calculation steps appear
+2. Click **Export audit**
+3. Open the record’s **Files** related list
+4. Look for two files named like `NZC_EasyAudit_{recordId}_{timestamp}_audit` (one JSON, one Markdown)
+
+If AI Insights produced a summary when the page loaded, that summary is included in both files. Follow-up Q&A answers are not exported.
+
+---
+
+## Home Page Sample Export
+
+If your administrator added **NZC EasyAudit Sample Export** to Home (or an App page):
+
+1. Enter how many energy-use records to sample (1–50)
+2. Click **Generate sample exports**
+3. If a previous run is already shown, confirm when asked before creating a new sample
+4. Open Files via the **Success** badge or the JSON / Markdown links
+5. Click **Download** to save the exported Files to your computer
+
+The tool remembers your last run. Batch sample exports never include AI summaries.
+
+---
+
 ## Common Questions
 
 ### Q: Why don't I see the component?
@@ -245,11 +273,10 @@ That usually means AI Insights is not activated in your org. You can still use t
 
 ### Q: Can I export the calculations?
 
-**A:** Currently, the component is view-only:
-- Calculations are displayed in the UI
-- No export functionality currently available
-- Use browser print/save features if needed
-- Future versions may include export capabilities
+**A:** Yes:
+- On a record, use **Export audit** to save JSON + Markdown Files on that energy-use record
+- On Home (if configured), use **NZC EasyAudit Sample Export** to batch-export a Fuel Type sample and **Download** the Files locally
+- See [Audit Export Contract](design/audit-export-contract.md) for file naming and JSON shape
 
 ### Q: Why do I see "Custom fuel or Custom unit conversion"?
 

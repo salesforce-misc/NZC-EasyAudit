@@ -199,13 +199,32 @@ export default class NZCEasyAuditInsights extends LightningElement {
       });
       this.summaryText = text || "";
       this.aiAvailable = true;
+      this.dispatchSummaryReady(true, this.summaryText);
     } catch {
       // Treat any failure (feature not activated, template not published, etc.) as
       // "AI isn't available here" rather than surfacing an error for a disabled feature.
       this.aiAvailable = false;
+      this.dispatchSummaryReady(false, null);
     } finally {
       this.probeComplete = true;
     }
+  }
+
+  /**
+   * Notifies parent (EasyAudit) that the load-time summary probe finished so exports
+   * can include the summary when AI is available. Bubbles; composed for cross-root.
+   */
+  dispatchSummaryReady(available, summary) {
+    this.dispatchEvent(
+      new CustomEvent("summaryready", {
+        detail: {
+          available: !!available,
+          summary: available ? summary || "" : null
+        },
+        bubbles: true,
+        composed: true
+      })
+    );
   }
 
   handlePillClick(event) {

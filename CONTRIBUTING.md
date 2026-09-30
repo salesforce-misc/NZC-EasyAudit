@@ -6,7 +6,7 @@ Thank you for your interest in contributing to NZC EasyAudit! This document prov
 
 ### Reporting Bugs
 
-If you find a bug, please report it via [GitHub Issues](https://github.com/jvillalpando_sfemu/NZC-EasyAudit/issues). When reporting bugs, please include:
+If you find a bug, please report it via [GitHub Issues](https://github.com/salesforce-misc/NZC-EasyAudit/issues). When reporting bugs, please include:
 
 - **Steps to reproduce**: Clear, step-by-step instructions to reproduce the issue
 - **Expected behavior**: What you expected to happen
@@ -20,7 +20,7 @@ If you find a bug, please report it via [GitHub Issues](https://github.com/jvill
 
 ### Suggesting Features
 
-We welcome feature suggestions! Please open a [GitHub Issue](https://github.com/jvillalpando_sfemu/NZC-EasyAudit/issues) with:
+We welcome feature suggestions! Please open a [GitHub Issue](https://github.com/salesforce-misc/NZC-EasyAudit/issues) with:
 
 - **Clear description**: What feature would you like to see?
 - **Use case**: How would this feature be used?
@@ -96,8 +96,8 @@ We welcome feature suggestions! Please open a [GitHub Issue](https://github.com/
 
 If you have questions about contributing, please:
 
-- Open a [GitHub Discussion](https://github.com/jvillalpando_sfemu/NZC-EasyAudit/discussions)
-- Review existing [Issues](https://github.com/jvillalpando_sfemu/NZC-EasyAudit/issues)
+- Open a [GitHub Discussion](https://github.com/salesforce-misc/NZC-EasyAudit/discussions)
+- Review existing [Issues](https://github.com/salesforce-misc/NZC-EasyAudit/issues)
 - Check the [README.md](README.md) for project documentation
 
 ## Contributor License Agreement (CLA)

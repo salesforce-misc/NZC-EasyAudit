@@ -20,6 +20,22 @@
         <apexClass>NZC_EasyAuditPromptService</apexClass>
         <enabled>true</enabled>
     </classAccesses>
+    <classAccesses>
+        <apexClass>NZC_EasyAuditExportController</apexClass>
+        <enabled>true</enabled>
+    </classAccesses>
+    <classAccesses>
+        <apexClass>NZC_EasyAuditExportService</apexClass>
+        <enabled>true</enabled>
+    </classAccesses>
+    <classAccesses>
+        <apexClass>NZC_EasyAuditSampleController</apexClass>
+        <enabled>true</enabled>
+    </classAccesses>
+    <classAccesses>
+        <apexClass>NZC_EasyAuditSampleService</apexClass>
+        <enabled>true</enabled>
+    </classAccesses>
     <description
   >Provides access to NZC EasyAudit Apex classes and Lightning Web Components</description>
     <hasActivationRequired>false</hasActivationRequired>

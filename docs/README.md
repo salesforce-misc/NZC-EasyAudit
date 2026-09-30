@@ -37,7 +37,15 @@ Welcome to the NZC EasyAudit documentation. This folder contains comprehensive g
    - How to use the component
    - Understanding calculations
    - Interpreting results
+   - Exporting the audit trail
    - Common questions
+
+### For Integrators / AI Agents
+
+6. **[Audit Export Contract](design/audit-export-contract.md)**
+   - JSON/Markdown schema and filename conventions
+   - Reuse rules for other components and LLMs
+   - `summaryready` event and Apex persistence API
 
 ---
 
@@ -55,6 +63,8 @@ Welcome to the NZC EasyAudit documentation. This folder contains comprehensive g
 ```
 docs/
 ├── README.md (this file)
+├── design/
+│   └── audit-export-contract.md  # Export schema for integrators/LLMs
 ├── admin-quick-start.md      # Quick setup guide
 ├── admin-setup.md            # Complete setup instructions
 ├── admin-configuration.md    # Advanced configuration
@@ -83,7 +93,7 @@ Documentation is updated regularly to reflect:
 - Common issues and solutions
 
 **Last Updated:** September 2026  
-**Version:** 1.1 (includes AI Audit Insights)
+**Version:** 1.3 (includes AI Audit Insights, File export, Home sample export)
 
 ---
 
@@ -100,7 +110,7 @@ Documentation is updated regularly to reflect:
 
 Found an issue with the documentation? Have a suggestion?
 
-- Open an issue on [GitHub](https://github.com/jvillalpando_sfemu/NZC-EasyAudit/issues)
+- Open an issue on [GitHub](https://github.com/salesforce-misc/NZC-EasyAudit/issues)
 - Submit a pull request with improvements
 - Contact the maintainers
 

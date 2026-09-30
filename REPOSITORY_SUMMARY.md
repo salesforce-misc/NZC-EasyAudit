@@ -31,8 +31,12 @@ The accelerator addresses the need for transparency in emissions calculations by
      - Determines record type (Vehicle vs Stationary)
      - Instantiates appropriate calculation class
      - Displays results in accordion format
+     - Listens for Insights `summaryready`; **Export audit** saves JSON+MD Files via export module/service
+     - Exposes `@api getAuditExportPayload()` for reuse by other LWCs
    - **Dependencies**: 
      - `NZC_EasyAuditControllerV2` (Apex)
+     - `NZC_EasyAuditExportController` (Apex)
+     - `nZC_EasyAuditExport` (JS builder)
      - `nZC_EasyAuditVehicleCalc` (JS)
      - `nZC_EasyAuditStationaryCalc` (JS)
      - `nZC_EasyAuditStep` (LWC child component)
@@ -51,12 +55,27 @@ The accelerator addresses the need for transparency in emissions calculations by
    - **Key Responsibilities**:
      - Auto-generates a plain-language summary once the audit trail is ready
      - Uses the initial summary call as an availability probe; hides the panel if Prompt Builder / Einstein Generative AI is unavailable
+     - Dispatches `summaryready` (`available`, `summary`) so parents can include the load summary in exports
      - Accepts suggestion chips or free-text questions about the trail
      - Formats model output safely (strip LaTeX, round long decimals, Markdown → rich text)
    - **Props**: `recordId`, `instructions` (audit trail steps from parent)
    - **Dependencies**: `NZC_EasyAuditAiController` (Apex)
 
-4. **nZC_EasyAuditVehicleCalc** (`force-app/main/default/lwc/nZC_EasyAuditVehicleCalc/`)
+4. **nZC_EasyAuditExport** (`force-app/main/default/lwc/nZC_EasyAuditExport/`)
+   - **Purpose**: Pure reusable builders for JSON + Markdown export payloads and discoverable file names
+   - **Key Exports**: `buildAuditExport`, `buildFileNames`, `SCHEMA_VERSION`, `EXPORT_TYPE`, `FILE_NAME_PREFIX`
+   - **Contract**: See `docs/design/audit-export-contract.md`
+   - **Not exposed** to App Builder (`isExposed=false`)
+
+5. **nZC_EasyAuditSampleExport** (`force-app/main/default/lwc/nZC_EasyAuditSampleExport/`)
+   - **Purpose**: Home / App Page tool to sample existing energy-use records and batch-export Files
+   - **Key Responsibilities**:
+     - Accepts sample size (1–50)
+     - Calls stratified sampler (object × FuelType)
+     - Runs client calc + `buildAuditExport` + `saveAuditExport` per record (no AI)
+   - **Targets**: `lightning__HomePage`, `lightning__AppPage`
+
+6. **nZC_EasyAuditVehicleCalc** (`force-app/main/default/lwc/nZC_EasyAuditVehicleCalc/`)
    - **Purpose**: JavaScript class that performs vehicle energy use emissions calculations
    - **Key Responsibilities**:
      - Processes vehicle energy use data
@@ -67,7 +86,7 @@ The accelerator addresses the need for transparency in emissions calculations by
      - `nZC_EasyAuditLogging` (for step creation)
      - `nZC_EasyAuditUnitConversion` (for unit conversions)
 
-5. **nZC_EasyAuditStationaryCalc** (`force-app/main/default/lwc/nZC_EasyAuditStationaryCalc/`)
+7. **nZC_EasyAuditStationaryCalc** (`force-app/main/default/lwc/nZC_EasyAuditStationaryCalc/`)
    - **Purpose**: JavaScript class that performs stationary energy use emissions calculations
    - **Key Responsibilities**:
      - Processes stationary energy use data
@@ -79,7 +98,7 @@ The accelerator addresses the need for transparency in emissions calculations by
      - `nZC_EasyAuditLogging` (for step creation)
      - `nZC_EasyAuditUnitConversion` (for unit conversions)
 
-6. **nZC_EasyAuditUnitConversion** (`force-app/main/default/lwc/nZC_EasyAuditUnitConversion/`)
+8. **nZC_EasyAuditUnitConversion** (`force-app/main/default/lwc/nZC_EasyAuditUnitConversion/`)
    - **Purpose**: Utility module for unit conversions
    - **Key Responsibilities**:
      - Provides conversion factors for various units
@@ -87,7 +106,7 @@ The accelerator addresses the need for transparency in emissions calculations by
      - Handles fuel consumption unit conversions
      - Handles distance and area conversions
 
-7. **nZC_EasyAuditLogging** (`force-app/main/default/lwc/nZC_EasyAuditLogging/`)
+9. **nZC_EasyAuditLogging** (`force-app/main/default/lwc/nZC_EasyAuditLogging/`)
    - **Purpose**: Utility class for creating calculation step objects
    - **Key Responsibilities**:
      - Creates structured calculation step objects
@@ -156,8 +175,21 @@ The accelerator addresses the need for transparency in emissions calculations by
    - **Key Methods**: `ask(auditTrailJson, userQuery)` - Builds input params and returns first generation text
    - **Sharing**: `with sharing`
 
-6. **NZC_EasyAuditControllerV2Test** / **NZC_EasyAuditAiControllerTest**
-   - Test classes for the data controller and AI façade
+6. **NZC_EasyAuditExportController** (`force-app/main/default/classes/NZC_EasyAuditExportController.cls`)
+   - **Purpose**: Thin façade to persist JSON/Markdown audit exports as Salesforce Files
+   - **Key Methods**: `saveAuditExport(recordId, jsonBody, markdownBody, jsonFileName, markdownFileName)`
+   - **Sharing**: `with sharing`
+
+7. **NZC_EasyAuditExportService** (`force-app/main/default/classes/NZC_EasyAuditExportService.cls`)
+   - **Purpose**: Sole ContentVersion DML seam for exports (`FirstPublishLocationId` on the parent record)
+   - **Naming**: `NZC_EasyAudit_{recordId}_{stamp}_audit.json|.md` (aligned with LWC builder)
+   - **Sharing**: `with sharing`
+
+8. **NZC_EasyAuditSampleController** / **NZC_EasyAuditSampleService**
+   - **Purpose**: Stratified random sampling of existing energy-use records (object × FuelType) for Home Page batch export
+   - **Cap**: `MAX_SAMPLE_SIZE = 50`
+
+9. **Test classes**: `NZC_EasyAuditControllerV2Test`, `NZC_EasyAuditAiControllerTest`, `NZC_EasyAuditExportServiceTest`, `NZC_EasyAuditSampleServiceTest`
 
 #### GenAI Prompt Templates
 
@@ -278,6 +310,20 @@ The accelerator addresses the need for transparency in emissions calculations by
 - Panel auto-hides when Einstein Prompt Builder / Generative AI is not available
 - Client-side response sanitization (LaTeX strip, decimal rounding, safe Markdown)
 
+### 8. Audit File Export
+- User-triggered **Export audit** saves JSON + Markdown as Files on the energy-use record
+- Reusable builder module `nZC_EasyAuditExport` (importable by other LWCs)
+- Discoverable filenames: `NZC_EasyAudit_{recordId}_{stamp}_audit.json|.md`
+- Includes load-time AI summary when Insights probe succeeded
+- Contract for other LLMs/integrators: `docs/design/audit-export-contract.md`
+
+### 9. Home Page Sample Export
+- `nZC_EasyAuditSampleExport` on Lightning Home / App pages
+- Stratified sampling of existing Stationary + Vehicle records by FuelType
+- Batch client-side calc + File export (no AI summaries in batch)
+- Per-user last-run persistence (`NZC_EasyAudit_SampleRun_Latest`), regenerate confirmation
+- Success rows link to ContentDocuments; Download uses Shepherd multi-file download
+
 ---
 
 ## Directory Structure
@@ -302,7 +348,13 @@ NZC-EasyAudit/
 │           │   ├── NZC_EasyAuditInfoWrapper.cls
 │           │   ├── NZC_EasyAuditAiController.cls
 │           │   ├── NZC_EasyAuditAiControllerTest.cls
-│           │   └── NZC_EasyAuditPromptService.cls
+│           │   ├── NZC_EasyAuditPromptService.cls
+│           │   ├── NZC_EasyAuditExportController.cls
+│           │   ├── NZC_EasyAuditExportService.cls
+│           │   ├── NZC_EasyAuditExportServiceTest.cls
+│           │   ├── NZC_EasyAuditSampleController.cls
+│           │   ├── NZC_EasyAuditSampleService.cls
+│           │   └── NZC_EasyAuditSampleServiceTest.cls
 │           ├── contentassets/   # Content assets
 │           ├── flexipages/      # Lightning pages
 │           ├── genAiPromptTemplates/  # Einstein Prompt Builder templates
@@ -310,6 +362,8 @@ NZC-EasyAudit/
 │           ├── layouts/         # Page layouts
 │           ├── lwc/             # Lightning Web Components
 │           │   ├── nZC_EasyAudit/
+│           │   ├── nZC_EasyAuditExport/
+│           │   ├── nZC_EasyAuditSampleExport/
 │           │   ├── nZC_EasyAuditInsights/
 │           │   ├── nZC_EasyAuditLogging/
 │           │   ├── nZC_EasyAuditStationaryCalc/
@@ -372,12 +426,7 @@ NZC-EasyAudit/
 - **Component Composition**: LWC components composed together
 
 #### Note on fflib Patterns
-The project currently uses a simplified architecture. While the workspace rules reference fflib patterns (Selectors, Services, UnitOfWork), the current implementation uses:
-- Direct controller queries (not Selectors)
-- No Service layer (controller directly queries)
-- No UnitOfWork pattern (no DML operations)
-
-This is acceptable for a read-only audit component but should be considered if extending functionality.
+The project historically used a simplified read-only architecture (direct controller queries, no UnitOfWork). **File export is the first DML seam**: all `ContentVersion` inserts live in `NZC_EasyAuditExportService` so a future fflib UnitOfWork can replace that Service without changing LWC or controller callers. fflib is not currently vendored in this repo.
 
 ---
 
@@ -419,8 +468,8 @@ This is acceptable for a read-only audit component but should be considered if e
 - Salesforce CLI or deployment tool
 
 ### Deployment Methods
-1. **One-Click GitHub Deploy**: Via GitHub Deploy button
-2. **Workbench**: Upload zip package
+1. **One-Click GitHub Deploy**: Heroku githubsfdeploy against `salesforce-misc/NZC-EasyAudit` (`main`, SFDX `force-app`)
+2. **Workbench**: Convert `force-app` to Metadata API zip (see README)
 3. **Salesforce CLI**: `sf project deploy start --source-dir force-app`
 
 ### Post-Deployment
@@ -428,7 +477,8 @@ This is acceptable for a read-only audit component but should be considered if e
 2. Configure on Vehicle Energy Use and/or Stationary Energy Use pages
 3. Assign `NZC_EasyAudit_Access` permission set (includes AI Apex class access)
 4. _(Optional)_ Activate Einstein Generative AI / Prompt Builder and confirm `NZC_EasyAudit_Audit_Insights` is published for AI Insights
-5. Test with sample records
+5. _(Optional)_ Add `nZC_EasyAuditSampleExport` to Home / App pages for stratified sample File export
+6. Test with sample records
 
 ---
 
@@ -522,6 +572,7 @@ When working with this codebase:
 - **Code Quality**: Integrated with SF Code Analyzer
 - **Security**: All queries enforce user-level security with `WITH USER_MODE`
 - **AI Insights**: Optional Einstein Prompt Builder integration (`NZC_EasyAudit_Audit_Insights`)
+- **File Export**: JSON + Markdown ContentVersion artifacts; see `docs/design/audit-export-contract.md`
 
 ---
 

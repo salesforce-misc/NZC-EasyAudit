@@ -33,7 +33,7 @@ Choose your deployment method:
 
 ```bash
 # Clone the repository
-git clone https://github.com/jvillalpando_sfemu/NZC-EasyAudit.git
+git clone https://github.com/salesforce-misc/NZC-EasyAudit.git
 cd NZC-EasyAudit
 
 # Authenticate to your org
@@ -124,6 +124,22 @@ If the panel never appears, Generative AI / Prompt Builder is not available or t
 
 ---
 
+## Step 6: Add Sample Export to Home _(optional)_
+
+Batch-export EasyAudit Files for a stratified sample of existing energy-use records:
+
+1. Navigate to **Setup** → **Lightning App Builder**
+2. Edit the **Home** page (or an App page)
+3. Add **NZC EasyAudit Sample Export**
+4. Save and activate
+5. Enter how many sample records (1–50) and click **Generate sample exports**
+6. After a run, use **Success** / JSON / Markdown links to open Files, or **Download** for a local zip
+7. Reloading the page restores the **last run**; Generate asks before replacing it
+
+Sampling covers Stationary and Vehicle records across Fuel Types. AI summaries are not included in batch exports.
+
+---
+
 ## Troubleshooting
 
 ### Component Not Visible?
@@ -174,4 +190,4 @@ If the panel never appears, Generative AI / Prompt Builder is not available or t
 
 ---
 
-**Need Help?** Check the [Complete Admin Setup Guide](admin-setup.md) or [open an issue](https://github.com/jvillalpando_sfemu/NZC-EasyAudit/issues) on GitHub.
+**Need Help?** Check the [Complete Admin Setup Guide](admin-setup.md) or [open an issue](https://github.com/salesforce-misc/NZC-EasyAudit/issues) on GitHub.

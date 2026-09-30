@@ -10,13 +10,27 @@
 
 <div align="center">
 
-[![Deploy to Salesforce](https://img.shields.io/badge/Deploy%20to%20Salesforce-00A1E0?style=for-the-badge&logo=salesforce&logoColor=white)](https://githubsfdeploy.herokuapp.com?owner=jvillalpando_sfemu&repo=NZC-EasyAudit&ref=main)
+[![Deploy to Salesforce](https://img.shields.io/badge/Deploy%20to%20Salesforce-00A1E0?style=for-the-badge&logo=salesforce&logoColor=white)](https://githubsfdeploy.herokuapp.com?owner=salesforce-misc&repo=NZC-EasyAudit&ref=main)
 
 **One-click deployment to your Salesforce org**
 
-> **Note:** You'll need to authenticate with your Salesforce org. Alternatively, use the [Salesforce CLI deployment method](#-option-3-salesforce-cli-deployment) below.
+> **Note:** Uses the public [salesforce-misc/NZC-EasyAudit](https://github.com/salesforce-misc/NZC-EasyAudit) upstream (`main`). Authenticate with your Salesforce org when prompted. Alternatively, use the [Salesforce CLI deployment method](#-option-3-salesforce-cli-deployment) below.
 
 </div>
+
+---
+
+## 🆕 New Features
+
+Recent capabilities added to this accelerator:
+
+| Feature | What it does |
+| ------- | ------------ |
+| **AI Audit Insights** | Optional Prompt Builder panel that summarizes the audit trail and answers follow-up questions; auto-hides when Generative AI is unavailable |
+| **Audit File Export** | **Export audit** on the EasyAudit card writes discoverable JSON + Markdown Files on the energy-use record (includes load-time AI summary when available) |
+| **Home Page Sample Export** | Stratified Fuel Type sample of existing Stationary/Vehicle records, batch File export without AI, last-run restore, regenerate confirmation, success File links, and local multi-file Download |
+
+See [docs/design/audit-export-contract.md](docs/design/audit-export-contract.md) for the integrator / LLM export contract.
 
 ---
 
@@ -49,6 +63,19 @@
 - **Graceful Degradation**: If Prompt Builder / Einstein Generative AI is not activated in the org, the AI panel stays hidden—core EasyAudit still works
 - **Safe Display**: Client-side cleanup strips residual LaTeX, rounds long decimals, and renders a safe Markdown subset
 
+### 📤 **Audit File Export**
+
+- **Export audit** action on the EasyAudit card saves two Salesforce Files on the energy-use record: JSON (machine) and Markdown (human)
+- Discoverable titles: `NZC_EasyAudit_{recordId}_{timestamp}_audit`
+- Includes the load-time AI summary when Insights is available
+- Reusable builder module for other components; see [docs/design/audit-export-contract.md](docs/design/audit-export-contract.md)
+
+### 🏠 **Home Page Sample Export**
+
+- Home / App Page tool (`nZC_EasyAuditSampleExport`) selects existing Stationary and Vehicle energy-use records with **Fuel Type × object** coverage
+- Batch-runs the same client calc + File export pipeline (AI summaries intentionally omitted)
+- Remembers the **last run** per user, confirms before regenerating, links each success to its Files, and offers **Download** of the exported Files to your computer
+
 ---
 
 ## 🚀 Getting Started
@@ -73,19 +100,28 @@ Choose your preferred deployment method:
 
 Click the **"Deploy to Salesforce"** button above for instant deployment to your org.
 
+The Heroku [GitHub Salesforce Deploy Tool](https://github.com/afawcett/githubsfdeploy) reads this public SFDX repo (`sfdx-project.json` → default package directory `force-app`) from **`salesforce-misc/NZC-EasyAudit`** on branch **`main`**.
+
 #### 📦 Option 2: Workbench Deployment
 
 For environments where GitHub access is restricted:
 
-1. **Download** the pre-built deployment package:
-   - Direct download: [NZC-EasyAudit-Deploy.zip](./NZC-EasyAudit-Deploy.zip)
-   - Or download from the [GitHub Releases](https://github.com/jvillalpando_sfemu/NZC-EasyAudit/releases) tab
-2. **Navigate** to [Salesforce Workbench](https://workbench.developerforce.com/login.php)
-3. **Login** to your target org
-4. **Go to** Migration → Deploy
-5. **Upload** the zip file and deploy
+1. **Download** the repository archive: [main.zip](https://github.com/salesforce-misc/NZC-EasyAudit/archive/refs/heads/main.zip)
+2. **Convert** to Metadata API format with Salesforce CLI:
 
-**Alternative Tools:** You can also deploy using [Salesforce Inspector](https://chrome.google.com/webstore/detail/salesforce-inspector/aodjmnfhjibkcdimpodiifdjnnncaafh) or the [Ant Migration Tool](https://developer.salesforce.com/docs/atlas.en-us.daas.meta/daas/forcemigrationtool_install.htm).
+```bash
+unzip NZC-EasyAudit-main.zip
+cd NZC-EasyAudit-main
+sf project convert source --source-dir force-app --output-dir mdapi-deploy
+cd mdapi-deploy && zip -r ../NZC-EasyAudit-Deploy.zip .
+```
+
+3. **Navigate** to [Salesforce Workbench](https://workbench.developerforce.com/login.php)
+4. **Login** to your target org
+5. **Go to** Migration → Deploy
+6. **Upload** `NZC-EasyAudit-Deploy.zip` and deploy
+
+**Alternative Tools:** You can also deploy using [Salesforce Inspector](https://chrome.google.com/webstore/detail/salesforce-inspector/aodjmnfhjibkcdimpodiifdjnnncaafh) or the [Ant Migration Tool](https://developer.salesforce.com/docs/atlas.en-us.daas.meta/daas/forcemigrationtool_install.htm). Or use a package from the [GitHub Releases](https://github.com/salesforce-misc/NZC-EasyAudit/releases) tab when published.
 
 #### 🛠️ Option 3: Salesforce CLI Deployment
 
@@ -94,7 +130,7 @@ For developers who prefer command-line tools:
 ##### 3.1 Clone the Repository
 
 ```bash
-git clone https://github.com/jvillalpando_sfemu/NZC-EasyAudit.git
+git clone https://github.com/salesforce-misc/NZC-EasyAudit.git
 cd NZC-EasyAudit
 ```
 
@@ -150,6 +186,11 @@ After deploying with any method above, complete these manual steps:
    - Assign the `NZC EasyAudit Access` permission set (includes AI Apex class access)
    - Open an energy-use record: the AI panel appears only when generation succeeds
 
+5. **Add Sample Export to Home** _(optional)_
+   - Setup → Lightning App Builder → edit the Home page
+   - Add **NZC EasyAudit Sample Export**
+   - Save and activate
+
 ---
 
 ## 🎯 Usage
@@ -200,15 +241,34 @@ When Einstein Prompt Builder is available in your org:
 
 If the panel never appears, Prompt Builder / Generative AI is not activated (or the prompt template is not published)—EasyAudit still works without it.
 
+### 📤 **Exporting the Audit Trail**
+
+1. Open a record with the EasyAudit card and wait for calculation steps to load
+2. Click **Export audit** on the card
+3. Two Files appear on the record: a `.json` document and a `.md` document named `NZC_EasyAudit_{recordId}_{timestamp}_audit`
+4. If AI Insights produced a load-time summary, it is included in both files
+
+Integrator / LLM contract: [docs/design/audit-export-contract.md](docs/design/audit-export-contract.md)
+
+### 🏠 **Running a Home Page Sample Export**
+
+1. Open the Lightning Home (or App) page where **NZC EasyAudit Sample Export** is placed
+2. Enter how many records to sample (1–50) and click **Generate sample exports**
+3. If a previous run is shown, confirm when asked before regenerating
+4. Use each **Success** link (or JSON / Markdown links) to open the Files
+5. Click **Download** to save the exported Files to your computer
+
+The page restores your last run automatically. Batch sample exports never call AI Insights.
+
 ---
 
 ## 🏗️ Technical Architecture
 
 This accelerator contains the following metadata:
 
-- **7 Lightning Web Components** (`nZC_EasyAudit`, `nZC_EasyAuditStep`, `nZC_EasyAuditInsights`, `nZC_EasyAuditVehicleCalc`, `nZC_EasyAuditStationaryCalc`, `nZC_EasyAuditUnitConversion`, `nZC_EasyAuditLogging`)
-- **5 Apex Classes** (`NZC_EasyAuditControllerV2`, `NZC_EasyAuditConstants`, `NZC_EasyAuditInfoWrapper`, `NZC_EasyAuditAiController`, `NZC_EasyAuditPromptService`)
-- **2 Apex Test Classes** (`NZC_EasyAuditControllerV2Test`, `NZC_EasyAuditAiControllerTest`)
+- **9 Lightning Web Components** (`nZC_EasyAudit`, `nZC_EasyAuditStep`, `nZC_EasyAuditInsights`, `nZC_EasyAuditExport`, `nZC_EasyAuditSampleExport`, `nZC_EasyAuditVehicleCalc`, `nZC_EasyAuditStationaryCalc`, `nZC_EasyAuditUnitConversion`, `nZC_EasyAuditLogging`)
+- **9 Apex Classes** (`NZC_EasyAuditControllerV2`, `NZC_EasyAuditConstants`, `NZC_EasyAuditInfoWrapper`, `NZC_EasyAuditAiController`, `NZC_EasyAuditPromptService`, `NZC_EasyAuditExportController`, `NZC_EasyAuditExportService`, `NZC_EasyAuditSampleController`, `NZC_EasyAuditSampleService`)
+- **4 Apex Test Classes** (`NZC_EasyAuditControllerV2Test`, `NZC_EasyAuditAiControllerTest`, `NZC_EasyAuditExportServiceTest`, `NZC_EasyAuditSampleServiceTest`)
 - **1 Aura Component** (`NZC_EasyAuditShell`)
 - **1 GenAI Prompt Template** (`NZC_EasyAudit_Audit_Insights`)
 - **1 Permission Set** (`NZC_EasyAudit_Access`)
@@ -242,6 +302,10 @@ graph TB
     N --> O[NZC_EasyAuditAiController]
     O --> P[NZC_EasyAuditPromptService]
     P --> Q[NZC_EasyAudit_Audit_Insights Prompt Template]
+    B --> R[nZC_EasyAuditExport]
+    R --> S[NZC_EasyAuditExportController]
+    S --> T[NZC_EasyAuditExportService]
+    T --> U[ContentVersion Files on record]
 ```
 
 ### 🧩 **Key Components**
@@ -255,8 +319,12 @@ graph TB
 | `nZC_EasyAuditStationaryCalc`| JavaScript class that performs stationary energy use emissions calculations |
 | `nZC_EasyAuditStep`          | Lightning Web Component that displays individual calculation steps in accordion format |
 | `nZC_EasyAuditInsights`      | Optional AI panel: audit-trail summary and single-shot Q&A via Prompt Builder |
+| `nZC_EasyAuditExport`         | Pure reusable builders for JSON/Markdown export payloads and file names |
+| `nZC_EasyAuditSampleExport`   | Home/App Page tool: stratified sample of energy-use records + batch File export |
 | `NZC_EasyAuditAiController`  | Thin Apex façade for AI summary and question methods |
 | `NZC_EasyAuditPromptService` | Invokes the Einstein prompt template with audit-trail JSON and user query |
+| `NZC_EasyAuditExportController` | Thin Apex façade to save export Files |
+| `NZC_EasyAuditExportService` | Inserts ContentVersion JSON + Markdown on the parent record |
 | `NZC_EasyAudit_Audit_Insights`| Published GenAI flex prompt template for audit insights |
 | `nZC_EasyAuditUnitConversion`| Utility class for handling unit conversions between different measurement systems |
 | `NZC_EasyAuditShell`         | Aura component wrapper that enables the LWC to be added to Lightning pages |
@@ -305,13 +373,13 @@ Skills provide interactive workflows for common tasks. See [SKILLS.md](./SKILLS.
 
 ## 📄 License
 
-This project is licensed under the **Apache License 2.0** - see the [LICENSE.md](LICENSE.md) file for details.
+This project is licensed under the **Apache License 2.0** - see the [LICENSE](LICENSE) file for details.
 
 ---
 
 ## 🐛 How to Report Bugs
 
-Found a bug or have a feature request? Please report it via [GitHub Issues](https://github.com/jvillalpando_sfemu/NZC-EasyAudit/issues).
+Found a bug or have a feature request? Please report it via [GitHub Issues](https://github.com/salesforce-misc/NZC-EasyAudit/issues).
 
 When reporting bugs, please include:
 
@@ -330,12 +398,13 @@ Comprehensive documentation is available in the [`docs/`](docs/) folder:
 - **[Admin Configuration Guide](docs/admin-configuration.md)** - Advanced configuration options
 - **[Admin Troubleshooting Guide](docs/admin-troubleshooting.md)** - Solutions to common issues
 - **[User Guide](docs/user-guide.md)** - End user documentation
+- **[Audit Export Contract](docs/design/audit-export-contract.md)** - Integrator / LLM export contract
 
 ## 🆘 Support
 
 - 📚 **Documentation**: Check the [docs folder](docs/) for comprehensive guides
-- 🐛 **Issues**: Report bugs via [GitHub Issues](https://github.com/jvillalpando_sfemu/NZC-EasyAudit/issues)
-- 💬 **Discussions**: Join the conversation in [GitHub Discussions](https://github.com/jvillalpando_sfemu/NZC-EasyAudit/discussions)
+- 🐛 **Issues**: Report bugs via [GitHub Issues](https://github.com/salesforce-misc/NZC-EasyAudit/issues)
+- 💬 **Discussions**: Join the conversation in [GitHub Discussions](https://github.com/salesforce-misc/NZC-EasyAudit/discussions)
 - 📧 **Contact**: Reach out to the maintainers for enterprise support
 
 ## ⚠️ Disclaimer

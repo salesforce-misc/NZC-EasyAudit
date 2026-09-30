@@ -6,9 +6,13 @@
  */
 
 import { LightningElement, api, track } from "lwc";
+import { ShowToastEvent } from "lightning/platformShowToastEvent";
 import getAuditInfo from "@salesforce/apex/NZC_EasyAuditControllerV2.getRecordInfo";
+import saveAuditExport from "@salesforce/apex/NZC_EasyAuditExportController.saveAuditExport";
 import NZC_EasyAuditVehicleCalc from "c/nZC_EasyAuditVehicleCalc";
 import NZC_EasyAuditStationaryCalc from "c/nZC_EasyAuditStationaryCalc";
+import { buildAuditExport } from "c/nZC_EasyAuditExport";
+
 export default class NZCEasyAudit extends LightningElement {
   @api
   recordId;
@@ -22,6 +26,10 @@ export default class NZCEasyAudit extends LightningElement {
 
   @track
   activeSectionNames = [];
+
+  aiAvailable = false;
+  aiLoadSummary = null;
+  isExporting = false;
 
   connectedCallback() {
     if (!this.didCall) {
@@ -76,9 +84,87 @@ export default class NZCEasyAudit extends LightningElement {
     return this.allExpanded ? "Collapse all" : "Expand all";
   }
 
+  get disableExport() {
+    return !this.hasSteps || this.isExporting;
+  }
+
   toggleExpandAll = () => {
     this.activeSectionNames = this.allExpanded
       ? []
       : this.steps.map((step) => step.sectionName);
   };
+
+  handleSummaryReady = (event) => {
+    const detail = event && event.detail ? event.detail : {};
+    this.aiAvailable = !!detail.available;
+    this.aiLoadSummary = this.aiAvailable ? detail.summary || "" : null;
+  };
+
+  /**
+   * Public snapshot for other LWCs that compose EasyAudit and need the same
+   * export payload without rebuilding the trail.
+   */
+  @api
+  getAuditExportPayload() {
+    if (!this.recordId || !this.hasSteps) {
+      return null;
+    }
+    return buildAuditExport({
+      recordId: this.recordId,
+      objectApiName: this.serverAuditInfo && this.serverAuditInfo.objectName,
+      steps: this.instructions,
+      aiLoadSummary: this.aiAvailable ? this.aiLoadSummary : null
+    });
+  }
+
+  handleExportAudit = async () => {
+    if (this.disableExport) {
+      return;
+    }
+    this.isExporting = true;
+    try {
+      const payload = this.getAuditExportPayload();
+      if (!payload) {
+        throw new Error("No audit trail is available to export.");
+      }
+      const result = await saveAuditExport({
+        recordId: this.recordId,
+        jsonBody: payload.jsonString,
+        markdownBody: payload.markdownString,
+        jsonFileName: payload.jsonFileName,
+        markdownFileName: payload.markdownFileName
+      });
+      const jsonTitle =
+        (result && result.jsonTitle) || payload.jsonFileName;
+      const mdTitle =
+        (result && result.markdownTitle) || payload.markdownFileName;
+      this.dispatchEvent(
+        new ShowToastEvent({
+          title: "Audit exported",
+          message: `Saved Files: ${jsonTitle}, ${mdTitle}`,
+          variant: "success"
+        })
+      );
+    } catch (error) {
+      this.dispatchEvent(
+        new ShowToastEvent({
+          title: "Export failed",
+          message: this.extractErrorMessage(error),
+          variant: "error"
+        })
+      );
+    } finally {
+      this.isExporting = false;
+    }
+  };
+
+  extractErrorMessage(error) {
+    if (error && error.body && error.body.message) {
+      return error.body.message;
+    }
+    if (error && typeof error.message === "string") {
+      return error.message;
+    }
+    return "Request failed";
+  }
 }

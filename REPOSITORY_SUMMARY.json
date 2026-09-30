@@ -308,13 +308,17 @@
     },
     "deployment": {
       "methods": [
-        "One-Click GitHub Deploy",
-        "Workbench",
+        "One-Click GitHub Deploy (githubsfdeploy.herokuapp.com?owner=salesforce-misc&repo=NZC-EasyAudit&ref=main)",
+        "Workbench (convert force-app to Metadata API zip)",
         "Salesforce CLI"
       ],
+      "upstream_repo": "https://github.com/salesforce-misc/NZC-EasyAudit",
       "post_deployment_steps": [
         "Add NZC_EasyAuditShell component to Lightning pages",
         "Configure on Vehicle/Stationary Energy Use pages",
+        "Assign NZC_EasyAudit_Access permission set",
+        "Optional: enable Prompt Builder for AI Insights",
+        "Optional: add nZC_EasyAuditSampleExport to Home",
         "Test with sample records"
       ]
     },

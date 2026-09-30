@@ -1,0 +1,146 @@
+<!--
+ Copyright (c) 2026, Salesforce, Inc.
+ All rights reserved.
+ SPDX-License-Identifier: Apache-2.0
+ For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/Apache-2.0
+-->
+<template>
+  <lightning-card title="NZC EasyAudit sample export">
+    <div class="slds-p-around_medium">
+      <p class="slds-m-bottom_small">
+        Select existing Stationary and Vehicle energy-use records with Fuel Type
+        coverage, then write EasyAudit JSON and Markdown Files on each record.
+        AI summaries are not included in batch exports.
+      </p>
+
+      <template if:true={lastRunBanner}>
+        <div
+          class="slds-notify slds-notify_alert slds-alert_info slds-m-bottom_small"
+          role="status"
+        >
+          <span class="slds-assistive-text">Info</span>
+          <h2>{lastRunBanner}</h2>
+        </div>
+      </template>
+
+      <lightning-input
+        type="number"
+        label="How many sample records?"
+        value={sampleSize}
+        min="1"
+        max="50"
+        step="1"
+        field-level-help={sampleSizeHelp}
+        onchange={handleSampleSizeChange}
+        disabled={isRunning}
+        data-id="sample-size"
+      ></lightning-input>
+
+      <div class="slds-m-top_medium slds-grid slds-gutters_small">
+        <div class="slds-col slds-grow-none">
+          <lightning-button
+            variant="brand"
+            label="Generate sample exports"
+            onclick={handleGenerate}
+            disabled={disableGenerate}
+            data-id="generate"
+          ></lightning-button>
+        </div>
+        <div class="slds-col slds-grow-none">
+          <lightning-button
+            variant="neutral"
+            label="Download"
+            onclick={handleDownload}
+            disabled={disableDownload}
+            data-id="download"
+            title="Download exported Files to your computer"
+          ></lightning-button>
+        </div>
+      </div>
+
+      <template if:true={isLoadingLastRun}>
+        <div class="slds-m-top_medium slds-grid slds-grid_vertical-align-center">
+          <lightning-spinner
+            alternative-text="Loading last sample run"
+            size="small"
+          ></lightning-spinner>
+          <span class="slds-m-left_small">Loading last run…</span>
+        </div>
+      </template>
+
+      <template if:true={isRunning}>
+        <div class="slds-m-top_medium slds-grid slds-grid_vertical-align-center">
+          <lightning-spinner
+            alternative-text="Exporting sample records"
+            size="small"
+          ></lightning-spinner>
+          <span class="slds-m-left_small">{progressLabel}</span>
+        </div>
+      </template>
+
+      <template if:true={showProgress}>
+        <template if:false={isRunning}>
+          <p class="slds-m-top_medium slds-text-body_regular">{progressLabel}</p>
+        </template>
+
+        <ul class="slds-m-top_small slds-has-dividers_bottom-space">
+          <template for:each={rowStatuses} for:item="row">
+            <li key={row.key} class="slds-item slds-p-vertical_x-small">
+              <template if:true={row.isSuccess}>
+                <a
+                  class={row.badgeClass}
+                  href={row.jsonUrl}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  data-id="success-file-link"
+                  >{row.badgeLabel}</a
+                >
+              </template>
+              <template if:false={row.isSuccess}>
+                <span class={row.badgeClass}>{row.badgeLabel}</span>
+              </template>
+
+              <template if:true={row.recordUrl}>
+                <a
+                  class="slds-m-left_small"
+                  href={row.recordUrl}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  >{row.label} ({row.recordId})</a
+                >
+              </template>
+              <template if:false={row.recordUrl}>
+                <span class="slds-m-left_small"
+                  >{row.label} ({row.recordId})</span
+                >
+              </template>
+
+              <div class="slds-text-body_small slds-text-color_weak">
+                <template if:true={row.isSuccess}>
+                  <template if:true={row.jsonUrl}>
+                    <a
+                      href={row.jsonUrl}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      >JSON</a
+                    >
+                  </template>
+                  <template if:true={row.markdownUrl}>
+                    <span> · </span>
+                    <a
+                      href={row.markdownUrl}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      >Markdown</a
+                    >
+                  </template>
+                </template>
+                <template if:false={row.isSuccess}>{row.message}</template>
+              </div>
+            </li>
+          </template>
+        </ul>
+      </template>
+    </div>
+  </lightning-card>
+</template>

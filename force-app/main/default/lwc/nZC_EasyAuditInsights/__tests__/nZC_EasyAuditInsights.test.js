@@ -65,6 +65,9 @@ describe("c-n-z-c-easy-audit-insights", () => {
     element.recordId = "a01000000000001AAA";
     document.body.appendChild(element);
 
+    const summaryReady = jest.fn();
+    element.addEventListener("summaryready", summaryReady);
+
     element.instructions = SAMPLE_INSTRUCTIONS;
     await Promise.resolve();
     await Promise.resolve();
@@ -82,6 +85,12 @@ describe("c-n-z-c-easy-audit-insights", () => {
       "<p>Fuel consumption drove the final result.</p>"
     );
 
+    expect(summaryReady).toHaveBeenCalledTimes(1);
+    expect(summaryReady.mock.calls[0][0].detail).toEqual({
+      available: true,
+      summary: "Fuel consumption drove the final result."
+    });
+
     // Re-setting the same instructions should not trigger a second summary call.
     element.instructions = SAMPLE_INSTRUCTIONS;
     await Promise.resolve();
@@ -98,6 +107,10 @@ describe("c-n-z-c-easy-audit-insights", () => {
     });
     element.recordId = "a01000000000001AAA";
     document.body.appendChild(element);
+
+    const summaryReady = jest.fn();
+    element.addEventListener("summaryready", summaryReady);
+
     element.instructions = SAMPLE_INSTRUCTIONS;
 
     await Promise.resolve();
@@ -106,6 +119,11 @@ describe("c-n-z-c-easy-audit-insights", () => {
 
     expect(getAuditSummary).toHaveBeenCalledTimes(1);
     expect(element.shadowRoot.querySelector(".ask-ai-card")).toBeNull();
+    expect(summaryReady).toHaveBeenCalledTimes(1);
+    expect(summaryReady.mock.calls[0][0].detail).toEqual({
+      available: false,
+      summary: null
+    });
   });
 
   it("asks a question and renders the response", async () => {

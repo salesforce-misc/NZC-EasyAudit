@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<LightningComponentBundle xmlns="http://soap.sforce.com/2006/04/metadata">
+    <apiVersion>65.0</apiVersion>
+    <description
+  >Home Page tool to sample Stationary/Vehicle energy-use records by FuelType and export EasyAudit Files</description>
+    <isExposed>true</isExposed>
+    <masterLabel>NZC EasyAudit Sample Export</masterLabel>
+    <targets>
+        <target>lightning__HomePage</target>
+        <target>lightning__AppPage</target>
+    </targets>
+</LightningComponentBundle>

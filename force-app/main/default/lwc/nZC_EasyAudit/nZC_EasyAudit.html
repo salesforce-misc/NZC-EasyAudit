@@ -9,12 +9,21 @@
 <template>
   <lightning-card title="Emissions calculation audit trail">
     <template if:true={hasSteps}>
-      <lightning-button
-        slot="actions"
-        label={toggleAllLabel}
-        variant="brand-outline"
-        onclick={toggleExpandAll}
-      ></lightning-button>
+      <div slot="actions" class="slds-button-group">
+        <lightning-button
+          label="Export audit"
+          variant="neutral"
+          disabled={disableExport}
+          onclick={handleExportAudit}
+          data-id="export-audit"
+        ></lightning-button>
+        <lightning-button
+          label={toggleAllLabel}
+          variant="brand-outline"
+          onclick={toggleExpandAll}
+          data-id="toggle-expand"
+        ></lightning-button>
+      </div>
     </template>
     <template if:true={showV2}>
       <lightning-accordion
@@ -32,6 +41,7 @@
       <c-n-z-c_-easy-audit-insights
         instructions={instructions}
         record-id={recordId}
+        onsummaryready={handleSummaryReady}
       ></c-n-z-c_-easy-audit-insights>
     </template>
   </lightning-card>

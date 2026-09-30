@@ -658,7 +658,7 @@ This guide provides detailed troubleshooting steps for common issues administrat
 ### Support Channels
 
 1. **GitHub Issues**
-   - Report bugs: [GitHub Issues](https://github.com/jvillalpando_sfemu/NZC-EasyAudit/issues)
+   - Report bugs: [GitHub Issues](https://github.com/salesforce-misc/NZC-EasyAudit/issues)
    - Search existing issues
    - Follow issue templates
 
