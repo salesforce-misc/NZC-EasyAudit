@@ -163,16 +163,20 @@ export default class NZC_EasyAuditVehicleCalc  {
             }
         } else {
             // for vehicle
-            if (this.fuelConsumptionUnit && this.fuelConsumptionUnit.toLowerCase() === this.UNIT_GALLONS) {
+            // picklist values vary ("Gallons", "US Gallons", "UsGallons", "Litres"...), so normalize before matching
+            const unit = (this.fuelConsumptionUnit || '').toLowerCase().replace(/[\s_-]/g, '');
+            if (unit === 'ukgallons') {
+                this.totalFuelConsumptionLiters = this.unitConversion.convertValue(this.unitConversion.convertValue(this.fuelConsumption, 'UkGallons', 'm3'), 'm3', 'Liters'); // matrix has no direct UkGallons->Liters
+            } else if (unit.includes('gallon')) {
                 this.log.addLine(`totalFuelConsumptionLiters = Fuel Consumption / liter gallon conversion`)
                 this.log.addLine(`totalFuelConsumptionLiters = ${this.fuelConsumption} / ${this.LITER_GALLON_CONVERSION}`)
                 this.totalFuelConsumptionLiters = this.fuelConsumption / this.LITER_GALLON_CONVERSION;
-            }
-
-            if (this.fuelConsumptionUnit && this.fuelConsumptionUnit.toLowerCase() === this.UNIT_LITERS) {
+            } else if (['liters', 'liter', 'litres', 'litre'].includes(unit)) {
                 this.log.addLine('fuel in liters already');
                 this.log.addLine(`totalFuelConsumptionLiters = fuelConsumption`);
                 this.totalFuelConsumptionLiters = this.fuelConsumption;
+            } else {
+                this.log.addLine(`Unrecognized fuel consumption unit "${this.fuelConsumptionUnit}"; fuel consumption not converted`);
             }
         }
         this.log.addLine(`totalFuelConsumptionLiters = ${this.totalFuelConsumptionLiters}`)
