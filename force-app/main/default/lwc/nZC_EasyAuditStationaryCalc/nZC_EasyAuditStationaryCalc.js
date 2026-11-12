@@ -15,6 +15,7 @@ const RECORD_TYPE_DATA_CENTER = 'Data Center'
 const FUEL_TYPE_ELECTRICITY = 'Electricity'
 const FUEL_TYPE_REFRIGERANT = 'Refrigerant'
 const CONSUMPTION_UNIT_KWH = 'kWh';
+const ENERGY_UNITS = ['MWh', 'GWh', 'kcal'];
 const UNIT_M2 = 'm2';
 const UNIT_SQFT = 'sqft';
 const SCOPE1 = 'Scope 1';
@@ -97,6 +98,9 @@ export default class NZC_EasyAuditStationaryCalc {
         if (this.fuelConsumptionUnit === this.CONSUMPTION_UNIT_KWH) {
             this.log.addLine('Consumption in Kwh already');
             this.fuelConsumptionKwh = this.fuelConsumption;
+        } else if (ENERGY_UNITS.includes(this.fuelConsumptionUnit)) {
+            this.log.addLine('unit is energy, convert to kWh');
+            this.fuelConsumptionKwh = this.unitConversion.convertValue(this.fuelConsumption, this.fuelConsumptionUnit, this.CONSUMPTION_UNIT_KWH);
         } else {
             this.log.addRecordLink(this.OTHERSETITEM, this.setItemId);
             this.log.addLine(`unit is volumetric, convert using calorific value`)

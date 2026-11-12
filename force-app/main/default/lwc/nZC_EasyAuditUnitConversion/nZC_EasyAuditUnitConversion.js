@@ -83,6 +83,9 @@ const CONVERSION_FACTOR_LIST = [
     ['Tonnes', 1000, 'kG'],
 
     ['GALLONS', 3.785411818, 'LITERS'],
+    ['MWh', 1000, 'kWh'],
+    ['GWh', 1000000, 'kWh'],
+    ['kcal', 0.001162222, 'kWh'],
     ['miles', 1.60934 ,'Kilometers']
 ];
 export default class NZcEasyAuditUnitConversion {
